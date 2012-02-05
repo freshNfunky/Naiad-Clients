@@ -1,0 +1,161 @@
+Dummy BodyOp Iso-Scope
+|*
+   <h3>Overview</h3>
+   The Iso-Scope draws a 3D iso-surface in Naiad Studio's 3D viewport.
+   <p>
+   The iso-surface drawn by this scope comes from a signed distance channel
+   on the Field-Shape of each admitted body.  A body is admitted if it has a
+   Field-Shape with the appropriate distance channel. The body must also be
+   listed in the "Show Bodies" parameter (see below).
+   </p><p>
+   <h3>Iso-Surface Extraction</h3>
+   The Iso-Scope extracts, lights and renders the iso-surface directly on
+   the GPU. <p>BETA VERSION NOTE: The Iso-Scope, as currently implemented,
+   requires a graphics card that supports at least Pixel Shader 2.0.</p>
+   The iso-surface is rendered volumetrically in slices, similarly to the
+   "CAT-scans" often found in medical imaging.  More slices makes for a
+   higher-quality iso-surface.
+   </p><p>
+   <h3>General Scope Information</h3>
+   Scopes are Body Operators (BOPs) because they operate on bodies (they draw
+   them in the 3D viewport).  Scopes are implemented as "Dummy BOPs" which
+   means they are ignored by Naiad during a solve and will never affect your
+   simulations. It is thus safe to leave your scopes in your .ni files, even
+   for command-line solves.  Scopes are only ever used by Naiad Studio.
+   </p><p>
+   Bodies are fed to scopes via feeds that you connect to plugs on BOPs in the
+   Naiad Graph, just as you would connect "regular" feeds between BOP plugs.
+   Unlike "regular" feeds, however, the scope feeds may connect to both input
+   and output plugs.
+   </p><p>
+   If the current frame has live cached data (indicated by the green or gray
+   band in the timeline) you will immidiately see the cached bodies for that
+   frame flowing to your scope.  If the current frame falls outside the live
+   cache interval, Naiad Studio will attempt to load bodies from the EMP
+   specified by the plug's BOP's "EMP Cache" parameter, if such a parameter
+   exists. This allows you to seamlessly "scrub" through the results of
+   your solve regardless if it is a live solve running in Naiad Studio or
+   the results of a command-line simulation that ran (or is currently running)
+   on the farm or another machine.
+*|
+{
+    ClassName "BODY_SCOPE"
+    Category  "Body Scope"
+
+    ParamSection "Bodies"
+    {
+    BodyNameList "Show Bodies" "*"
+    |* This parameter is used to specify a white-space separated list
+        of body-names which will be drawn by this scope. The default
+        argument of * is a wildcard representing all bodies fed to the
+        scope. If the current frame has access to the solve cache, you
+        can right-click on this parameter to get a context-menu of
+        available body-names. *|
+    }
+
+    ParamSection "Iso-surface"
+    {
+    ChannelName Field "Iso Field Channel" "fluid-distance"
+    || The name of the distance channel to extract the iso-surface from.
+
+    Float  "Iso Value" "0"
+    || The distance value at which the iso-surface is extracted.
+
+    Float  "Iso Lower-Band" "@'Master Voxel Size'*2"
+    || How many voxels (in the field) to render "inside" the surface.
+
+    Float  "Iso Upper-Band" "0"
+    || How many voxels (in the field) to render "outside" the surface.
+    }
+
+    ParamSection "Quality"
+    {
+    Int "Slice Count" "256"
+    |* Number of slices used to sample the 3D volume. A higher number of 
+        slices produces a more accurate image, at the price of being slower
+        to draw *|
+
+    Vec3f "Supersampling" "1" "1" "1"
+    |* Number of samples per field-voxel in each dimension. It is uncommon 
+        to use a value other than one. *|
+    }
+
+    ParamSection "Material"
+    {
+    Vec3f  "Front Ambient"   "0.2" "0.2" "0.2"
+    || Front material ambient color.
+
+    Vec3f  "Front Diffuse"   "0.4" "0.5" "0.6"
+    || Front material diffuse color.
+
+    Vec3f  "Front Specular"  "0.1" "0.1" "0.1"        
+    || Front material specular color.
+
+    Float  "Front Shininess" "64"
+    || Front material specular exponent.
+
+    Vec3f  "Back Ambient"    "0.2" "0.2" "0.2"
+    || Back material ambient color.
+
+    Vec3f  "Back Diffuse"    "0.6" "0.5" "0.4"
+    || Back material diffuse color.
+
+    Vec3f  "Back Specular"   "0.1" "0.1" "0.1"                
+    || Back material specular color.
+
+    Float  "Back Shininess"  "64"
+    || Back material specular exponent.
+    }
+
+    ParamSection "Lighting"
+    {
+    Vec3f  "Light Position" "0" "0" "0"
+    || Light source position in eye-space.
+
+    Vec3f  "Light Ambient"  "1" "1" "1"
+    || Light source ambient color.
+
+    Vec3f  "Light Diffuse"  "1" "1" "1"
+    || Light source diffuse color.
+
+    Vec3f  "Light Specular" "1" "1" "1"        
+    || Light source specular color.
+    }
+
+    ParamSection "Clip Box"
+    {
+    Vec3f  "Translate" "0" "0" "0"
+    || Clip-box translation.
+
+    Vec3f  "Rotate"    "0" "0" "0"
+    || Clip-box rotation.
+
+    Vec3f  "Scale"     "1" "1" "1"
+    || Clip-box scale.
+    }
+
+    EnumGroup ShadowVoxelSize
+    {
+    "Body"
+    "Master"
+    }
+
+    ParamSection "Guides"
+    {		 
+	Toggle "Display Voxel Shadow" "On"
+    |* Controls whether or not a grid is drawn under each body, where
+       each grid voxel has the size defined by the "Voxel Size" parameter
+       (see below). *|
+
+    ShadowVoxelSize "Shadow Voxel Size" "Body"
+    |* Controls the size of each shadow voxel: Body = use the body's own
+       voxel-size, Master = Use the Master Voxel Size. *|
+    }
+
+    Group(Field) Input b "scope-input"
+    |* Bodies are fed through this input. Only bodies matching the "Field"
+       signature are fed to the scope (e.g. bodies that have a Field-Shape).
+       Unlike "regular" inputs, scope inputs may connect to both inputs
+       and output plugs in the graph.
+    *|
+}

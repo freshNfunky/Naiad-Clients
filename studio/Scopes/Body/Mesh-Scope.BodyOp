@@ -1,0 +1,156 @@
+Dummy BodyOp Mesh-Scope
+|*
+   <h3>Overview</h3>
+   The Mesh-Scope draws triangle-meshes in Naiad Studio's 3D viewport.
+   <p>
+   The meshes drawn by this scope come from the Triangle-Shape and Point-Shape
+   of each admitted body. A body is admitted if it matches the "Mesh" 
+   signature, which requires the existence of both a Triangle-Shape and a Point-
+   Shape. The body must also be listed in the "Show Bodies" parameter 
+   (see below).
+   </p><p>
+   <h3>General Scope Information</h3>
+   Scopes are Body Operators (BOPs) because they operate on bodies (they draw 
+   them in the 3D viewport). Scopes are implemented as "Dummy BOPs" which
+   means they are ignored by Naiad during a solve and will never affect your
+   simulations. It is thus safe to leave your scopes in your .ni files, even
+   for command-line solves. Scopes are only ever used by Naiad Studio.
+   </p><p>
+   Bodies are fed to scopes via feeds that you connect to plugs on BOPs just
+   as you would with "regular" feeds in the Naiad Graph.
+   </p><p>
+   If the current frame has live cached data (indicated by the green
+   band in the timeline) you will immidiately see the cached bodies for that
+   frame flowing to your scope. If the current frame falls outside the live
+   cache interval, Naiad Studio will attempt to load bodies from the EMP
+   specified by the plug's BOP's "EMP Cache" parameter, if such a parameter
+   exists. This allows you to seamlessly "scrub" through the results of 
+   your solve regardless if it is a live solve running in Naiad Studio or
+   the results of a command-line simulation that ran (or is currently running)
+   on the farm or another machine.
+*|
+{
+    ClassName "BODY_SCOPE"
+    Category  "Body Scope"
+
+    EnumGroup DisplayMode
+    {
+    "Wireframe"
+    "Flat Shaded"
+    "Flat Shaded + Wireframe"
+    "Smooth Shaded"
+    "Smooth Shaded + Wireframe"
+    }
+
+    ParamSection "Bodies"
+    {
+    BodyNameList "Show Bodies" "*"
+    |* This parameter is used to specify a white-space separated list
+       of body-names which will be drawn by this scope. The default 
+       argument of * is a wildcard representing all bodies fed to the
+       scope. If the current frame has access to the solve cache, you
+       can right-click on this parameter to get a context-menu of
+       available body-names. *|
+    }
+
+    ParamSection "Style"
+    {	
+    DisplayMode "Display Mode" "Smooth Shaded + Wireframe"
+    |* This parameter selects how the mesh is drawn. You have five 
+       options: Wireframe, Flat Shaded, Smooth Shaded, Flat Shaded + 
+       Wireframe and Smooth Shaded + Wireframe. The Wireframe
+       option draws the mesh as a wireframe. The Shaded options draws the
+       mesh as solid, shaded triangles. The Shaded + Wireframe option
+       draws the mesh as solid, shaded triangles, with a wireframe outline
+       on top. 
+    *|
+    }
+
+    ParamSection "Shading"
+    {
+    Vec3f  "Front Ambient"   "0.2" "0.2" "0.2"
+    || Front-facing material ambient term.
+
+    Vec3f  "Front Diffuse"   "0.5" "0.6" "0.7"
+    || Front-facing material diffuse term.
+
+    Vec3f  "Front Specular"  "0.1" "0.1" "0.1"
+    || Front-facing material specular term.
+
+    Float  "Front Shininess" "15.0"
+    || Front-facing material shininess.
+
+    Vec3f  "Back Ambient"    "0.2" "0.2" "0.2"
+    || Back-facing material ambient term.
+
+    Vec3f  "Back Diffuse"    "0.7" "0.6" "0.5"
+    || Back-facing material diffuse term.
+
+    Vec3f  "Back Specular"   "0.1" "0.1" "0.1"
+    || Back-facing material speuclar term.
+
+    Float  "Back Shininess"  "15.0"
+    || Back-facing material shininess.
+
+    Vec3f  "Light Ambient"   "0.2" "0.2" "0.2"
+    || Light ambient term.
+
+    Vec3f  "Light Diffuse"   "1.0" "1.0" "1.0"
+    || Light diffuse term.
+
+    Vec3f  "Light Specular"  "0.1" "0.1" "0.1"
+    || Light specular term.
+
+    Vec3f  "Light Position"  "30000" "30000" "30000"
+    || Light position. By default very far away.
+
+    Vec3f  "Line Color"      "0.2" "0.2" "0.2"
+    || Line color used for wire-frame rendering.
+
+    Float  "Line Width"      "2"
+    || Line width used for wire-frame rendering.
+    }
+
+    ParamSection "Velocity"
+    {
+    Toggle "Velocity" "Off"	
+    || Draw per-vertex velocity vectors.
+
+    Float  "Velocity Display Scale" "1"
+    || Length scale applied on the drawn velocity vectors.
+    }
+    
+    ParamSection "Normal"
+    {
+    Toggle "Vertex Normals" "Off"	
+    || Draw per-vertex normals.
+
+    Float  "Normal Display Scale" "0.5"
+    || Length scale applied on the drawn normal vectors.
+    }
+
+    EnumGroup ShadowVoxelSize
+    {
+    "Master"
+    }
+
+    ParamSection "Guides"
+    {		 
+    Toggle "Display Voxel Shadow" "On"
+    |* Controls whether or not a grid is drawn under each body, where
+       each grid cell has the size defined by the "Shadow Voxel Size" parameter
+       (see below). 
+    *|
+
+    ShadowVoxelSize "Shadow Voxel Size" "Master"
+    |* Controls the size of each shadow cell: Body = use the body's own
+       voxel-size, Master = Use the Master Voxel Size. 
+    *|
+    }
+
+    Group(Mesh) Input b "scope-input"
+    |* Bodies are fed through this input. Only bodies matching the "Mesh" 
+       signature are fed to the scope. Unlike "regular" inputs, scope inputs
+       may connect to both inputs and output plugs in the graph.
+    *|
+}

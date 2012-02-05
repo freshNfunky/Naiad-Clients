@@ -1,0 +1,10 @@
+#!/bin/bash
+
+# start the build setup...
+
+rm -rf $DEV_ROOT_NSTUDIO/stage-$EM_PLAT-$EM_ARCH
+mkdir $DEV_ROOT_NSTUDIO/stage-$EM_PLAT-$EM_ARCH
+cd $DEV_ROOT_NSTUDIO/stage-$EM_PLAT-$EM_ARCH
+mkdir debug
+cd debug
+cmake -DCMAKE_BUILD_TYPE=DEBUG -DCMAKE_INSTALL_PREFIX=$NAIAD_PATH $DEV_ROOT_NSTUDIO -G "Visual Studio 10 Win64"

@@ -1,0 +1,24 @@
+# only add source files, makefiles etc
+
+.directory
+.DS_Store
+*.o
+*.lo
+*~
+*.mpp
+*.emp
+core.*
+*.user
+
+# do not add binaries
+
+stage*
+public/stage*
+scripts/CMakeFiles
+*_debug
+*_release
+*_release_assert
+
+# nor ANY freakin' quicktimes!!!
+
+*.mov

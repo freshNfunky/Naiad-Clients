@@ -1,0 +1,65 @@
+<RCC>
+    <qresource prefix="">
+        <file>../images/nstudio-window-icon.png</file>
+        <file>../images/about.png</file>
+        <file>../images/launch.png</file>
+        <file>../images/splash.png</file>
+        <file>../images/warning-16.png</file>
+        <file>../images/error-16.png</file>
+        <file>../images/internal-error-16.png</file>
+        <file>../images/empty-16.png</file>
+        <file>../images/plus-18.png</file>
+        <file>../images/minus-18.png</file>
+        <file>../images/lock-16.png</file>
+        <file>../images/folder-16.png</file>
+        <file>../images/curve-16.png</file>
+        <file>../images/up-arrow-16.png</file>
+        <file>../images/down-arrow-16.png</file>
+
+        <file>../images/scrub_play-fwd-enabled.png</file>
+        <file>../images/scrub_play-fwd-disabled.png</file>
+        <file>../images/scrub_play-fwd-pressed.png</file>
+        <file>../images/scrub_pause-enabled.png</file>
+        <file>../images/scrub_pause-disabled.png</file>
+        <file>../images/scrub_pause-pressed.png</file>
+        <file>../images/scrub_single-fwd-enabled.png</file>
+        <file>../images/scrub_single-fwd-disabled.png</file>
+        <file>../images/scrub_single-fwd-pressed.png</file>
+        <file>../images/scrub_last-fwd-enabled.png</file>
+        <file>../images/scrub_last-fwd-disabled.png</file>
+        <file>../images/scrub_last-fwd-pressed.png</file>
+        <file>../images/scrub_play-bwd-enabled.png</file>
+        <file>../images/scrub_play-bwd-disabled.png</file>
+        <file>../images/scrub_play-bwd-pressed.png</file>
+        <file>../images/scrub_single-bwd-enabled.png</file>
+        <file>../images/scrub_single-bwd-disabled.png</file>
+        <file>../images/scrub_single-bwd-pressed.png</file>
+        <file>../images/scrub_first-bwd-enabled.png</file>
+        <file>../images/scrub_first-bwd-disabled.png</file>
+        <file>../images/scrub_first-bwd-pressed.png</file>
+        <file>../images/scrub_loop-enabled.png</file>
+        <file>../images/scrub_loop-disabled.png</file>
+        <file>../images/scrub_loop-pressed.png</file>
+
+        <file>../images/step_play-enabled.png</file>
+        <file>../images/step_play-disabled.png</file>
+        <file>../images/step_single-enabled.png</file>
+        <file>../images/step_single-disabled.png</file>
+        <file>../images/step_visible-enabled.png</file>
+        <file>../images/step_visible-disabled.png</file>
+        <file>../images/step_stop-enabled.png</file>
+        <file>../images/step_stop-disabled.png</file>
+        <file>../images/step_refresh-enabled.png</file>
+        <file>../images/step_refresh-disabled.png</file>
+        <file>../images/step_reset-enabled.png</file>
+        <file>../images/step_reset-disabled.png</file>
+
+        <file>../images/dock-widget_float.png</file>
+        <file>../images/dock-widget_close.png</file>
+
+    </qresource>
+    <qresource prefix="">
+        <file>../styles/default-style.qss</file>
+        <file>../styles/default-pref.xml</file>
+    </qresource>
+</RCC>

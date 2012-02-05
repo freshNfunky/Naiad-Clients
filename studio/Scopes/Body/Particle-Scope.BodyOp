@@ -1,0 +1,207 @@
+Dummy BodyOp Particle-Scope
+|* 
+   <h3>Overview</h3>
+   The Particle-Scope draws particles in Naiad Studio's 3D viewport.
+   <p>
+   The particles drawn by this scope come from the Particle-Shape of each
+   admitted body.  A body is admitted if it has a Particle-Shape, and is listed
+   in the "Show Bodies" parameter (see below).
+   </p><p><h3>Particle Shaders</h3>
+   The particles may be drawn using a choice of two shaders: "The Big Blue"
+   and "Channel Sampler".  
+   </p><p><h4>"The Big Blue" Shader</h4>
+   The Big Blue shader renders all particles as blue points, mapping velocity
+   to intensity, e.g., the faster the particle is moving, the brighter blue
+   its color gets.  The particles are drawn as white when their speed is equal
+   to or greater than the "Whitewater Speed" parameter.
+   </p><p><h4>"Channel Color" Shader</h4>
+   The Channel Color shader renders all particles as points, where the color
+   is taken from a particular particle channel. Vector-valued channels do 
+   a straight component-wise mapping from XYZ to RGB, whereas scalar-valued
+   channels are colored with the particle is drawn in red
+   and the brightness mapped to the magnitude of the scalar value.
+   </p><p><h4>"Gradient False Color" Shader</h4>
+   If gradient lighting is turned on, the Gradient False Color shader renders 
+   all particles as points, mapping the gradient vector to the particle's RGB.
+   </p><p>
+   <h3>General Scope Information</h3>
+   Scopes are Body Ops because they operate on bodies (they draw them in the 3D
+   viewport).  Scopes are implemented as "Dummy BodyOps" which means they are
+   ignored by Naiad during a solve and will never affect your simulations. It
+   is thus safe to leave your scopes in your .ni files, evenfor command-line
+   solves.  Scopes are only ever used by Naiad Studio.
+   </p><p>
+   Bodies are fed to scopes via feeds that you connect to plugs on BOPs just
+   as you would with "regular" feeds in the Naiad Graph.
+   </p><p>
+   If the current frame has live cached data (indicated by the green or gray 
+   band in the timeline) you will immidiately see the cached bodies for that
+   frame flowing to your scope.  If the current frame falls outside the live
+   cache interval, Naiad Studio will attempt to load bodies from the EMP
+   specified by the plug's BOP's "EMP Cache" parameter, if such a parameter
+   exists. This allows you to seamlessly "scrub" through the results of 
+   your solve regardless if it is a live solve running in Naiad Studio or
+   the results of a command-line simulation that ran (or is currently running)
+   on the farm or another machine.
+*|
+{
+    ClassName "BODY_SCOPE"
+    Category  "Body Scope"
+
+    EnumGroup Shader
+    {
+    "The Big Blue"
+    "Channel Color"
+    "Gradient False Color"
+    }
+
+    EnumGroup ChannelType
+    {
+    "Scalar"
+    "Vector"
+    }
+
+    ParamSection "Bodies"
+    {
+    BodyNameList "Show Bodies" "*" 
+    |* This parameter is used to specify a white-space separated list
+       of body-names which will be drawn by this scope. The default 
+       argument of * is a wildcard representing all bodies fed to the
+       scope. If the current frame has access to the solve cache, you
+       can right-click on this parameter to get a context-menu of
+       available body-names. *|
+
+    Toggle "Frame Bodies" "On"
+    |* When checked the clip-box resizes itself to the admitted bodies. It
+       is not possible to manually resize the clip box while framing is enabled.
+    *|
+    }
+
+    ParamSection "Clip Box"
+    {
+    Vec3f  "Translate" "0" "0" "0"
+    || Clip-box translation.
+
+    Vec3f  "Rotate"    "0" "0" "0"
+    || Clip-box rotation.
+
+    Vec3f  "Scale"     "1" "1" "1"
+    || Clip-box scale.
+    }
+
+    ParamSection "Style"
+    {	
+    Float  "Pixel Radius" "2"      
+    || The size (in pixels) of each particle.
+
+    Shader "Shader" "The Big Blue" 
+    || The particle-shader used to draw the particles. 
+    }
+
+    ParamSection "Velocity"
+    {
+    Toggle "Velocity Vectors" "Off"	
+    || Draw per-particle velocity vectors.
+
+    Float  "Velocity Display Scale" "1"
+    || Length scale applied on the drawn velocity vectors.
+    }
+
+    ParamSection "Gradient Lighting"
+    {
+    Toggle "Gradient Lighting" "Off"
+    || Gradient-based interactive lighting.
+
+    Toggle "Normalized Gradient" "Off"
+    || Light using the normalized gradient or not.
+
+    Float "Ambient Brightness" "0.75"
+    || The amount of ambient light available.
+
+    ChannelName Field "Gradient Channel" "fluid-distance"
+    |* Scalar Field-channel to compute gradient from, if Gradient Lighting
+       is enabled (see above). *|
+
+    Vec3f "Light Direction" "-1" "-1" "-1"
+    || The 'interactive light' direction (will be normalized by shader).
+    }
+
+    EnumGroup VisibleBlocks
+    {
+    "All"
+    "Range"
+    }
+
+    ParamSection "Blocks"
+    {
+    VisibleBlocks "Blocks Visibility" "All"
+    || Controls the visibility of the particle blocks.
+
+    Int "Block Range Start" "0"
+    || The start of the visible fine tile range.
+
+    Int "Block Range End" "100000000"
+    || The end of the visible fine tile range.
+    }
+
+    ParamSection "The Big Blue"
+    {
+    Float "Whitewater Speed" "5"
+    |* The speed a particle must reach (or exceed) in order to be rendered
+       as whitewater (e.g. white). The closer a particle gets to this speed
+       the whiter it becomes. 
+    *|
+    }
+
+    ParamSection "Color Channel"
+    {
+    ChannelName Particle "Color Channel" ""
+    |* The name of the particle-channel to map onto the particle's RGB.
+       For scalar-valued channels, the value is mapped to the red color
+       component only. 
+    *|
+
+    ChannelType "Channel Type" "Scalar"
+    |* How to interpret the incoming channel data: Scalar (single floating
+       point value mapped to the Red component) or Vector (three floating 
+       point values, mapped to RGB).
+    *|
+
+    Float "Min Visible Magnitude" "-99999"
+    || The smallest color channel magnitude visible in the Scope View.
+
+    Float "Max Visible Magnitude" "99999"
+    || The largest color channel magnitude visible in the Scope View.
+
+    Toggle "Normalized Range" "Off"
+    |* If checked, will normalize the color across the range given by
+       Min-Max Visible Magnitude. 
+    *|
+    }
+
+    EnumGroup ShadowVoxelSize
+    {
+    "Body"
+    "Master"
+    }
+
+    ParamSection "Guides"
+    {		 
+    Toggle "Display Voxel Shadow" "On"
+    |* Controls whether or not a grid is drawn under each body, where
+       each grid voxel has the size defined by the "Voxel Size" parameter
+       (see below). 
+    *|
+
+    ShadowVoxelSize "Shadow Voxel Size" "Body"
+    |* Controls the size of each shadow cell: Body = use the body's own
+       voxel-size, Master = Use the Master Voxel Size. *|
+    }
+
+    Group(Particle) Input b "scope-input" 
+    |* Bodies are fed through this input. Only bodies matching the "Particle" 
+       signature are fed to the scope (e.g. bodies that have a Particle-Shape).
+       Unlike "regular" inputs, scope inputs may connect to both inputs
+       and output plugs in the graph.
+    *|
+}

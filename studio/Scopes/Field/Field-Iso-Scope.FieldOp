@@ -1,0 +1,107 @@
+Dummy FieldOp Field-Iso-Scope
+{
+    ClassName "FIELD_SCOPE"
+    Category  "Field Scope"
+
+    ParamSection "Iso-surface"
+    {
+	Int "Component" "0" MIN=0 MAX=2 (0 2)
+	|| Which component field to display
+
+        Float  "Iso Value" "0"
+        || The distance value at which the iso-surface is extracted.
+
+        Float  "Iso Lower-Band" "@'Master Voxel Size'*2"
+        || How many voxels (in the field) to render "inside" the surface.
+
+        Float  "Iso Upper-Band" "0"
+        || How many voxels (in the field) to render "outside" the surface.
+    }
+
+    ParamSection "Quality"
+    {
+        Int "Slice Count" "256"
+        |* Number of slices used to sample the 3D volume. A higher number of 
+           slices produces a more accurate image, at the price of being slower
+           to draw *|
+
+        Vec3f "Supersampling" "1" "1" "1"
+        |* Number of samples per field-voxel in each dimension. It is uncommon 
+           to use a value other than one. *|
+
+	Float "Interactive Voxel Scale" "1"
+	|* Used to compute the interactive voxel-size used sampling the scoped 
+	   field.  If the field being scoped has a tile-layout attached, this
+	   parameter scales the voxel-size of that layout, otherwise the
+	   Master Voxel Size is scaled instead. *|
+    }
+
+    ParamSection "Material"
+    {
+    	Vec3f  "Front Ambient"   "0.2" "0.2" "0.2"
+        || Front material ambient color.
+    	Vec3f  "Front Diffuse"   "0.4" "0.5" "0.6"
+        || Front material diffuse color.
+    	Vec3f  "Front Specular"  "0.1" "0.1" "0.1"        
+        || Front material specular color.
+        Float  "Front Shininess" "64"
+        || Front material specular exponent.
+    	Vec3f  "Back Ambient"    "0.2" "0.2" "0.2"
+        || Back material ambient color.
+    	Vec3f  "Back Diffuse"    "0.6" "0.5" "0.4"
+        || Back material diffuse color.
+    	Vec3f  "Back Specular"   "0.1" "0.1" "0.1"                
+        || Back material specular color.
+        Float  "Back Shininess"  "64"
+        || Back material specular exponent.
+    }
+
+    ParamSection "Lighting"
+    {
+    	Vec3f  "Light Position" "0" "0" "0"
+        || Light source position in eye-space.
+    	Vec3f  "Light Ambient"  "1" "1" "1"
+        || Light source ambient color.
+    	Vec3f  "Light Diffuse"  "1" "1" "1"
+        || Light source diffuse color.
+    	Vec3f  "Light Specular" "1" "1" "1"        
+        || Light source specular color.
+    }
+
+    ParamSection "Transform"
+    {
+    	Vec3f  "Translate" "0" "0" "0"
+        || Clip-box translation.
+     	Vec3f  "Rotate"    "0" "0" "0"
+        || Clip-box rotation.
+     	Vec3f  "Scale"     "1" "1" "1"
+        || Clip-box scale.
+    }
+
+    EnumGroup ShadowVoxelSize
+    {
+	"Body"
+	"Master"
+    }
+
+    ParamSection "Guides"
+    {		 
+        Toggle "Display Voxel Shadow" "On"
+	|* Controls whether or not a grid is drawn under each body, where
+	   each grid voxel has the size defined by the "Voxel Size" parameter
+	   (see below). *|
+
+	ShadowVoxelSize "Shadow Voxel Size" "Body"
+	|* Controls the size of each shadow voxel: Body = use the body's own
+	   voxel-size, Master = Use the Master Voxel Size. *|
+    }
+
+    ParamSection "Scope Data Output"
+    {
+	Float "Min Value"              "" READONLY
+	Float "Max Value"              "" READONLY
+	Float "Interactive Voxel Size" "" READONLY
+    }
+
+    FieldOp Input "scope-input"
+}

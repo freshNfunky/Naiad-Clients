@@ -1,0 +1,76 @@
+Dummy FieldOp Field-Scalar-Scope
+{
+    ClassName "FIELD_SCOPE"
+    Category  "Field Scope"
+
+    ParamSection "Display"
+    {
+	Int "Component" "0" MIN=0 MAX=2 (0 2)
+	|| Which component field to display
+
+	Float "Min Visible Value" "-99999"
+	|| The smallest value visible in the 3D viewport
+
+	Float "Max Visible Value" "99999"
+	|| The largest value visible in the 3D viewport
+
+	Toggle "Normalized Range" "Off"
+	|* If On, will normalize the color across the range given by
+	   Min-Max Visible Value. *|
+    }
+
+    ParamSection "Quality"
+    {
+        Int "Slice Count" "256"
+        |* Number of slices used to sample the 3D volume. A higher number of 
+           slices produces a more accurate image, at the price of being slower
+           to draw *|
+
+        Vec3f "Supersampling" "1" "1" "1"
+        |* Number of samples per field-voxel in each dimension. It is uncommon 
+           to use a value other than one. *|
+
+	Float "Interactive Voxel Scale" "1"
+	|* Used to compute the interactive voxel-size used sampling the scoped 
+	   field.  If the field being scoped has a tile-layout attached, this
+	   parameter scales the voxel-size of that layout, otherwise the
+	   Master Voxel Size is scaled instead. *|
+    }
+
+    ParamSection "Transform"
+    {
+    	Vec3f  "Translate" "0" "0" "0"
+        || Clip-box translation.
+     	Vec3f  "Rotate"    "0" "0" "0"
+        || Clip-box rotation.
+     	Vec3f  "Scale"     "1" "1" "1"
+        || Clip-box scale.
+    }
+
+    EnumGroup ShadowVoxelSize
+    {
+	"Body"
+	"Master"
+    }
+
+    ParamSection "Guides"
+    {		 
+        Toggle "Display Voxel Shadow" "On"
+	|* Controls whether or not a grid is drawn under each body, where
+	   each grid voxel has the size defined by the "Voxel Size" parameter
+	   (see below). *|
+
+	ShadowVoxelSize "Shadow Voxel Size" "Body"
+	|* Controls the size of each shadow voxel: Body = use the body's own
+	   voxel-size, Master = Use the Master Voxel Size. *|
+    }
+
+    ParamSection "Scope Data Output"
+    {
+	Float "Min Value"              "" READONLY
+	Float "Max Value"              "" READONLY
+	Float "Interactive Voxel Size" "" READONLY
+    }
+
+    FieldOp Input "scope-input"
+}

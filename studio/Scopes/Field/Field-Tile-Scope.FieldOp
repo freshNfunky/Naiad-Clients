@@ -1,0 +1,63 @@
+Dummy FieldOp Field-Tile-Scope
+{
+    ClassName "FIELD_SCOPE"
+    Category  "Field Scope"
+
+    EnumGroup VoxelPlane
+    {
+	"XY"
+    	"XZ"
+    	"YZ"
+    }
+
+    ParamSection "Style"
+    {
+        Float "Pixel Radius" "2"
+    	|| The width (in pixels) of the wireframe outline of the tiles.
+    }
+
+    EnumGroup VisibleTiles
+    {
+	"None"
+	"All"
+	"Range"
+    }
+
+    ParamSection "Coarse Tiles"
+    {
+	Toggle "Coarse Tiles" "Off"
+    	|| Draw coarse tiles.
+
+    	Vec3f "Coarse Tile Color" "0.5" "0.5" "0.5"
+    	|| The coarse tiles are drawn using this color.
+    }
+
+    ParamSection "Fine Tiles"
+    {
+	VisibleTiles "Fine Tiles Visibility" "All"
+    	|| Controls the visibility of the fine tiles.
+
+	Int "Fine Tile Range Start" "0"
+	|| The start of the visible fine tile range.
+
+	Int "Fine Tile Range End" "100000"
+	|| The end of the visible fine tile range.
+
+	Vec3f "Fine Tile Color" "1" "1" "1"
+	|| The fine tiles are drawn using this color.
+    }
+
+    ParamSection "Voxels"
+    {
+	Toggle "Voxels" "Off"
+	|| Draw voxels.
+
+	Vec3f "Voxel Color" "1" "1" "0"
+	|| The voxels are drawn using this color.
+
+	VoxelPlane "Voxel Plane" "XZ"
+	|| The plane in which the voxel grid is drawn.
+    }
+
+    FieldOp Input "scope-input"
+}

@@ -1,0 +1,142 @@
+Command Architecture
+====================
+
+This documents describes the command infrastructure, which is the main
+architectural consideration in the Naiad Studio design.
+
+All functionality in Naiad Studio will be made available through commands.
+Commands are called by calling the corresponding command slot, which may or
+may not result in an undo command being executed and put on the undo stack.
+Calling the command slot may be done through an action being triggered (e.g.
+through a menu, tool bar button or keyboard shortcut), through mouse movements,
+or (later) through a textual representation of the command or a script.
+
+Most (or all) commands will reside in the singleton Ns class, which is mainly
+a wrapper class for Naiad Interface, making its functionality available through
+commands and in a more Qt friendly way. This means the Ns class will function as
+a hub, which the other classes communicate with directly, by calling command
+slots and connecting their own slots to Ns signals. All communication between
+Naiad and Naiad Studio will take place through the Ns class.
+
+
+Actions
+-------
+
+Actions have names, icons, keyboard shortcuts, status tips etc.
+
+Actions are put in menus and/or toolbars.
+
+An action is connected to a slot, which is called when the action is triggered.
+The slot may be a command slot (see below), or an intermediate slot that
+transforms the trigger signal into a command slot call, if these don't have
+matching signatures.
+
+Actions are QAction objects, or NsFocusAction objects. The NsFocusAction class
+is used to create actions in the main window that trigger and get information
+from corresponding QAction objects in the widget that has keyboard focus.
+Variables pointing to actions are named e.g. "selectAllAction".
+
+Most actions can be owned by and defined in the widget class on which the
+action operates, in which case they must normally be available through a
+public method, e.g. "selectAllAction()", so that they can be put in main
+window menus and/or tool bars, directly or using NsFocusActions. Member
+variables pointing to such actions will then be named e.g. "_selectAllAction".
+
+
+Command slots
+-------------
+
+Command slots are slots that correspond to commands invoked by the user,
+e.g. through an action, through a textual command or a script, or through
+direct interaction with things in the user interface.
+
+Command slots have a textual representation, which can be shown in the GUI
+when the command is invoked, and can be used (later) for scripting.
+
+Command slots normally reside in the Naiad Interface wrapper class Ns.
+Commands that do not communicate with Naiad, are not undoable, and are
+local to a specific class/widget may reside in that class.
+
+Command slots have names that end with "Command", e.g. "selectAllCommand()".
+
+Command slots that correspond to undoable commands are implemented using undo
+command objects. This means that the slot simply creates an undo command object
+and pushes it on the undo stack. (Which means that all classes that contain
+command slots corresponding to undoable commands need access to the undo stack).
+
+
+Undo commands
+-------------
+
+All commands that are undoable are implemented using undo commands.
+
+An undo command is a subclass of QUndoCommand, and has a constructor,
+which initialises the undo command, an undo() method and a redo() method.
+
+Undo command classes are collected in files with names ending with "Commands",
+and corresponding to where the command slot belongs. Currently, all undo command
+classes are defined in "NsCommands.h" and implemented in "NsCommands.cc".
+
+Undo commands may inherit from QUndoCommand directly, or indirectly,
+through a base class common to some subset of the undo commands.
+
+The undo() and redo() slots will normally not implement the actual
+functionality. This will instead be done by calling a function in the class
+that created the undo command. This function will have the same name as the
+command slot, but without the "Command" suffix.
+(The main reason for this is that such slots will normally want to send out a
+signal when they are done (see below). For this to be useful, the signal must
+be sent from a class that is easy to connect to, which is not the case with
+the undo command classes.)
+
+Undo commands may be implemented in terms of other undo commands, in which
+case the subcommands are created in the constructor, and used by calling
+the base class (QUndoAction) implementations in the undo() and redo() slots,
+before or after the code that implementats the command itself.
+
+Undo commands may be merged, so that several consecutive command invocations
+result in one undo command on the stack. This is useful for e.g. move and
+select commands, which would create a lot of commands on the stack if not
+merged.
+
+Select commands are undoable but should not change the clean state of the
+undo stack. This is achieved by wrapping the QUndoStack::isClean() function
+with our own function that takes this into account.
+
+
+Change notification signals
+---------------------------
+
+Commands that result in something being changed often provide notification
+of this change to others through a notification signal. Such signals normally
+have names that end with "Changed". E.g., if a global parameter has changed,
+a signal "globalParameterChanged" is emitted. This is done by the function
+implementing the actual functionality.
+
+
+Change notification slots
+-------------------------
+
+Any class that has an interest in something being changed shall have a change
+notification slot corresponding to the change, with a name that starts with
+"on". E.g. a class that needs to be notified when a global parameter changes
+shall have a slot "onGlobalParameterChanged", which is connected to the
+"globalParameterChanged" signal.
+
+Alternatively, a slot may have a name that starts with "update", and which
+specifies what it does, rather than which signal it responds to, if it does
+a single specific task. This provides better encapsulation, but is not always
+possible. At least not for special purpose classes, which most of our classes
+are.
+
+
+Connecting signals and slots, and invoking commands
+---------------------------------------------------
+
+In a traditional Qt design, signals and slots are normally connected by
+the object constructing the objects in which the signals and slots reside.
+However, command slots in the Ns class can, and should, be called directly
+from a widget that wants to invoke the command, instead of sending a signal
+that has to be connected to the command slot by someone. Similarly, the
+corresponding change notification signals in the Ns class may, and should,
+be connected to an object in its own constructor, not by the parent object.

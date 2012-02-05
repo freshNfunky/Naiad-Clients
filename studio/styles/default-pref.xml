@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nstudio>
+    <general>
+        <style path="/clients/config/nstudio-pro.qss"/>
+    </general>
+    <graph-view>
+        <background r="72" g="72" b="72"/>
+        <background-live r="226" g="255" b="226"/>
+        <selection-color r="249" g="255" b="61"/>
+        <feed-line r="0" g="0" b="0"/>
+        <feed-replaced-line r="160" g="160" b="160"/>
+        <feed-valid-line r="50" g="205" b="50"/>
+        <feed-invalid-line r="255" g="99" b="71"/>
+        <plug-line r="0" g="0" b="0"/>
+        <plug-text r="0" g="0" b="0"/>
+        <plug-background r="255" g="255" b="255"/>
+        <body-line r="0" g="0" b="0"/>
+        <body-text r="0" g="0" b="0"/>
+        <body-background r="255" g="255" b="255"/>
+        <op-line r="0" g="0" b="0"/>
+        <op-text r="0" g="0" b="0"/>
+        <op-background r="255" g="255" b="255"/>
+        <op-disabled r="160" g="160" b="164"/>
+        <op-state name="ACTIVE" r="7" g="176" b="0"/>
+        <op-state name="INACTIVE" r="160" g="160" b="160"/>
+        <op-state name="SUB_ACTIVE" r="205" g="250" b="157"/>
+        <op-state-default r="0" g="0" b="0"/>
+        <op-category name="Body" r="244" g="201" b="203"/>
+        <op-category name="Channel" r="207" g="244" b="234"/>
+        <op-category name="Convert" r="244" g="201" b="203"/>
+        <op-category name="Distance" r="210" g="230" b="255"/>
+        <op-category name="Dynamics" r="255" g="222" b="175"/>
+        <op-category name="Emit" r="225" g="207" b="229"/>
+        <op-category name="Field" r="210" g="230" b="255"/>
+        <op-category name="File" r="226" g="213" b="182"/>
+        <op-category name="Global" r="255" g="255" b="255"/>
+        <op-category name="Math" r="210" g="230" b="255"/>
+        <op-category name="Mesh" r="227" g="255" b="216"/>
+        <op-category name="Origin" r="255" g="255" b="217"/>
+        <op-category name="Particle" r="239" g="255" b="186"/>
+        <op-category name="Point" r="227" g="255" b="216"/>
+        <op-category name="Primitive" r="255" g="255" b="217"/>
+        <op-category-default r="255" g="255" b="255"/>
+        <signature name="Body" r="195" g="193" b="153"/>
+        <signature name="Camera" r="96" g="199" b="232"/>
+        <signature name="Field" r="133" g="217" b="107"/>
+        <signature name="Field-Gas" r="195" g="193" b="153"/>
+        <signature name="Field-Liquid" r="96" g="199" b="232"/>
+        <signature name="Field-Smoke" r="179" g="17" b="17"/>
+        <signature name="FieldOp" r="133" g="217" b="107"/>
+        <signature name="Mesh" r="195" g="193" b="153"/>
+        <signature name="Particle" r="195" g="193" b="153"/>
+        <signature name="Particle-Liquid" r="96" g="199" b="232"/>
+        <signature name="Particle-Smoke" r="179" g="17" b="17"/>
+        <signature name="Volume" r="133" g="217" b="107"/>
+        <signature-default r="0" g="0" b="0"/>
+    </graph-view>
+    <scope-view>
+        <background r="176" g="181" b="184"/>
+        <selection-color r="249" g="255" b="61"/>
+        <construction-grid r="127" g="127" b="127"/>
+        <axis-line r="255" g="255" b="255"/>
+        <axis-text r="0" g="0" b="0"/>
+        <box-line r="255" g="255" b="255"/>
+        <box-text r="0" g="0" b="0"/>
+        <clip-box-line r="255" g="255" b="255"/>
+        <clip-box-text r="0" g="0" b="0"/>
+        <frustum-line r="255" g="255" b="255"/>
+        <frustum-text r="0" g="0" b="0"/>
+        <import-transform-line r="255" g="255" b="255"/>
+        <import-transform-text r="0" g="0" b="0"/>
+        <plane-line r="255" g="255" b="255"/>
+        <plane-text r="0" g="0" b="0"/>
+        <sphere-line r="255" g="255" b="255"/>
+        <sphere-text r="0" g="0" b="0"/>
+        <hud-text r="223" g="223" b="185"/>
+        <body-label-text r="255" g="105" b="180"/>
+    </scope-view>
+</nstudio>

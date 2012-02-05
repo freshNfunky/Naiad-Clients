@@ -1,0 +1,212 @@
+Dummy BodyOp Tile-Scope
+|*
+   <h3>Overview</h3>
+   The Tile-Scope draws tile-layouts in Naiad Studio's 3D viewport.
+   <p>
+   The tiles drawn by this scope come from the tile-layout of each admitted
+   body. Each tile is drawn as a semi-transparent box.  All bodies have a 
+   tile-layout, so if it is listed in the "Show Bodies" parameter, the body 
+   will be admitted (see below).
+   </p><p><h3>Scoping the Tile-Layout</h3>
+   Looking at the tile-layout is the closest thing in Naiad to looking at the
+   fluid-domain box in other commercial packages.  A tile in Naiad represents
+   an NxNxN grid of voxels in which field-channels are stored and computed, where
+   N is the "Tile Size" on a body. The Naiad solver performs all Eulerian (e.g.
+   grid-based solves) on the tiles of the tile-layout. The tile-layout is
+   automatically expanded by the presence of fluids or whatever the solver is
+   tracking, so simulations involving bodies with very many tiles will solve
+   slower, and consume more memory than simulations of bodies with few tiles.
+   This is roughly equivalent to the difference between a very high-resolution
+   fluid domain and a low-resolution fluid-domain in other commercial packages.
+   Being able to see the tiles of the bodies in your simulation is a good way
+   of gauging, for instance, why a solve is taking so long or using so much
+   memory.  It is also useful to see "where" all the tiles are in space.
+   </p><p>
+   <h3>General Scope Information</h3>
+   Scopes are BodyOps because they operate on bodies (they draw them in the 3D
+   viewport). Scopes are implemented as "Dummy Ops" which means they are
+   ignored by Naiad during a solve and will never affect your simulations. 
+   It is thus safe to leave your scopes in your .ni files, even
+   for command-line solves. Scopes are only ever used by Naiad Studio.
+   </p><p>
+   Bodies are fed to scopes via feeds that you connect to plugs on Ops just
+   as you would with "regular" feeds in the Naiad Graph.
+   </p><p>
+   If the current frame has live cached data (indicated by the green or gray
+   band in the timeline) you will immidiately see the cached bodies for that
+   frame flowing to your scope.  If the current frame falls outside the live
+   cache interval, Naiad Studio will attempt to load bodies from the EMP
+   specified by the plug's Op's "EMP Cache" parameter, if such a parameter
+   exists. This allows you to seamlessly "scrub" through the results of
+   your solve regardless if it is a live solve running in Naiad Studio or
+   the results of a command-line simulation that ran (or is currently running)
+   on the farm or another machine.
+*|
+{
+    ClassName "BODY_SCOPE"
+    Category  "Body Scope"
+
+    EnumGroup VoxelPlane
+    {
+    "XY"
+    "XZ"
+    "YZ"
+    }
+
+    EnumGroup CullFace
+    {
+    "Back"
+    "Front"
+    "None"
+    }
+
+    ParamSection "Bodies"
+    {
+    BodyNameList "Show Bodies" "*"
+        |* This parameter is used to specify a white-space separated list
+           of body-names which will be drawn by this scope. The default
+           argument of * is a wildcard representing all bodies fed to the
+           scope. If the current frame has access to the solve cache, you
+           can right-click on this parameter to get a context-menu of
+           available body-names. 
+        *|
+    }
+
+    ParamSection "Style"
+    {
+        Float "Pixel Radius" "2"
+        || The width (in pixels) of the wireframe outline of the tiles.
+    }
+
+    EnumGroup VisibleTiles
+    {
+    "None"
+    "All"
+    "Range"
+    }
+
+    ParamSection "Coarse Tiles"
+    {
+    Toggle "Coarse Tiles" "On"
+    || Draw coarse tiles.
+
+    Toggle "Coarse Surface" "On"
+    || Draw surface.
+
+    Toggle "Coarse Surface Lines" "On"
+    || Draw surface lines.
+
+    Toggle "Coarse Internal Lines" "Off"
+    || Draw internal lines.
+
+    Toggle "Coarse Blend" "On"
+    || Enable blending.
+
+    CullFace "Coarse Culling" "Back"
+    || Cull surface faces.
+
+    Vec3f "Coarse Ambient Color" "0.2" "0.2" "0.2"
+    || Surface ambient color.
+
+    Float "Coarse Ambient Alpha" "0.1"
+    || Surface ambient alpha.
+
+    Vec3f "Coarse Diffuse Color" "0.2" "0.2" "0.2"
+    || Surface diffuse color.
+
+    Float "Coarse Diffuse Alpha" "0.2"
+    || Surface diffuse alpha.
+
+    Vec3f "Coarse Specular Color" "0.2" "0.2" "0.2"
+    || Surface specular color.
+
+    Float "Coarse Specular Alpha" "0.1"
+    || Surface diffuse alpha.
+
+    Vec3f "Coarse Surface Line Color" "0.5" "0.5" "0.5"
+    || The coarse tile surface lines are drawn using this color.
+
+    Float "Coarse Surface Line Alpha" "0.1"
+    || The coarse tile surface lines are drawn using this alpha.
+
+    Vec3f "Coarse Internal Line Color" "0.5" "0.5" "0.5"
+    || The coarse tile internal lines are drawn using this color.
+
+    Float "Coarse Internal Line Alpha" "0.1"
+    || The coarse tile internal lines are drawn using this alpha.
+    }
+
+    ParamSection "Fine Tiles"
+    {
+    VisibleTiles "Fine Tiles Visibility" "All"
+    || Controls the visibility of the fine tiles.
+
+    Int "Fine Tile Range Start" "0"
+    || The start of the visible fine tile range.
+
+    Int "Fine Tile Range End" "100000"
+    || The end of the visible fine tile range.
+
+    Toggle "Fine Surface" "On"
+    || Draw surface.
+
+    Toggle "Fine Surface Lines" "On"
+    || Draw surface lines.
+
+    Toggle "Fine Internal Lines" "Off"
+    || Draw internal lines.
+
+    Toggle "Fine Blend" "On"
+    || Enable blending.
+
+    CullFace "Fine Culling" "Back"
+    || Cull surface faces.
+
+    Vec3f "Fine Ambient Color" "0.1" "0.1" "0.1"
+    || Surface ambient color.
+
+    Float "Fine Ambient Alpha" "0.1"
+    || Surface ambient alpha.
+
+    Vec3f "Fine Diffuse Color" "0.6" "0.8" "0.7"
+    || Surface diffuse color.
+
+    Float "Fine Diffuse Alpha" "0.2"
+    || Surface diffuse alpha.
+
+    Vec3f "Fine Specular Color" "0.1" "0.1" "0.1"
+    || Surface specular color.
+
+    Float "Fine Specular Alpha" "0.2"
+    || Surface specular alpha.
+
+    Vec3f "Fine Surface Line Color" "0.6" "0.8" "0.7"
+    || The coarse tile surface lines are drawn using this color.
+
+    Float "Fine Surface Line Alpha" "0.2"
+    || The coarse tile internal lines are drawn using this alpha.
+
+    Vec3f "Fine Internal Line Color" "0.6" "0.8" "0.7"
+    || The coarse tile internal lines are drawn using this color.
+
+    Float "Fine Internal Line Alpha" "0.1"
+    || The coarse tile internal lines are drawn using this color.
+    }
+
+    ParamSection "Voxels"
+    {
+    Toggle "Voxels" "On"
+    || Draw voxels.
+
+    Vec3f "Voxel Color" "1" "1" "0"
+    || The voxels are drawn using this color.
+
+    VoxelPlane "Voxel Plane" "XZ"
+    || The plane in which the voxel grid is drawn.
+    }
+
+    Group(Body) Input b "scope-input"
+    |* Bodies are fed through this input. Unlike "regular" inputs, scope inputs
+       may connect to both inputs and output plugs in the graph.
+    *|
+}

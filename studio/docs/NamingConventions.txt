@@ -1,0 +1,94 @@
+Naming Conventions
+==================
+
+This document describes naming conventions used in the Naiad Studio source
+code.
+
+Use the naming conventions to understand the purpose of a class or function,
+and when you write your own code, to make the code consistent.
+
+
+Classes
+-------
+
+The following naming conventions describe the naming of Naiad Studio classes.
+
+1. All Naiad Studio classes start with 'Ns'.
+
+2. Classes that inherit from a Qt class and can be seen as the "Naiad Studio
+   version" of that class have the same name as the Qt class, but starting
+   with 'Ns' instead of 'Q'. This can be the case for a base class, from which
+   other Naiad Studio classes inherit, or a class that is the only class that
+   inherits from the corresponding Qt class.
+
+   NsMainWindow
+   NsSplashScreen
+
+3. Classes that are a specialisation of a Qt class have a name that is
+   similar to the Qt class, but also contains a word (or two) describing in
+   which way it is specialised.
+
+   NsAboutDialog
+   NsGlobalParameterWidget
+   NsGraphView
+   NsSetNopParameterCommand
+
+
+Signals
+-------
+
+The following naming conventions describe the naming of Naiad Studio signals.
+
+1. A signal sent when a command has been executed describes the change that
+   was made by the command, and ends with 'Changed'.
+
+   globalParameterChanged()
+   selectionChanged()
+
+
+Slots
+-----
+
+The following naming conventions describe the naming of Naiad Studio slots.
+
+1. A slot that is used to execute a command ends with 'Command'.
+
+   setGlobalParameterCommand()
+   saveCommand()
+
+2. A slot or function that implements the functionalty of an undo command has
+   the same name as the slot used to execute the command, but without the
+   'Command' suffix.
+
+   setGlobalParameter()
+   save()
+   
+3. A slot that corresponds directly to a signal sent when a command has been
+   executed starts with 'on', followed by the name of the signal.
+
+   onGlobalParameterChanged()
+   onSelectionChanged()
+
+4. A slot that performs some form of update, but does not corresponding
+   directly to the signal it is connected to, has a name that starts with
+   'update'.
+
+   updateSaveAction()
+   updateWindowTitle()
+
+
+Functions
+---------
+
+The following naming conventions describe the naming of Naiad Studio functions
+in general, regardless of them being slots or not.
+
+1. A function that adds a given object to a container or other data structure
+   has a name that starts with 'add'.
+
+   addNopItem(NsNopItem *item)
+
+2. A fucntion that creates an object from the given data and adds it to a
+   container or other data structure has a name that starts with 'create'.
+
+   createNopItem(const QString &name)

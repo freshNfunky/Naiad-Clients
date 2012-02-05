@@ -1,0 +1,486 @@
+
+/*
+ *
+ * Variables are not yet supported in Qt Stylesheets. If they were it would
+ * be handy to do the following:
+ *
+ * @variables {
+ *   myColor: #696969; 
+ * }
+ *
+ * QWidget {
+ *     background: var(myColor);
+ * }
+ *
+ * ----------
+ *
+ * Back to reality, document standard colors in comments for now...
+ *
+ * Focus color: #87ceeb (skyblue)
+ * Text-color: #f5f5f5 (whitesmoke)
+ * Disabled text-color: #b5b5b5 (whitesmoke)
+ * Window background: #696969 (dimgrey)
+ * Text background: #393939 (darkgrey)
+ * Input border color: #a0a0a0 (lightgrey)
+ */
+
+/* -------------------------------------------------------------------------- */
+
+QFrame {
+    border: 0px solid transparent;
+    padding: 0px;
+}
+
+/* -------------------------------------------------------------------------- */
+
+QWidget {
+    color: #f5f5f5;				/* text color */
+    background: #696969;		/* window background color */
+}
+
+/* -------------------------------------------------------------------------- */
+
+QDockWidget {
+    border: 2px solid transparent;
+    padding: 2px;
+    color: #f5f5f5;				/* text color */
+    background: #696969;		/* window background color */
+    titlebar-close-icon: url(:/images/dock-widget_close.png);
+    titlebar-normal-icon: url(:/images/dock-widget_float.png);
+}
+QDockWidget::title {
+    text-align: left; /* align the text to the left */
+    padding: 5px;
+    background: #636363;
+}
+QDockWidget::close-button, 
+QDockWidget::float-button {
+    border: 1px solid #000000;
+    padding: 0px;
+    margin: 0px;
+    icon-size: 12px; /* maximum icon size */
+}
+QDockWidget::close-button:hover, 
+QDockWidget::float-button:hover {
+    background: #87ceeb;	/* focus color */
+}
+QDockWidget::close-button:pressed, 
+QDockWidget::float-button:pressed {
+    padding: 1px -1px -1px 1px;
+}
+
+/* -------------------------------------------------------------------------- */
+
+/* Note: QUndoView inherits QListView */
+QListView {
+    color: #f5f5f5;							/* text color */
+    background: #696969;					/* window background color */
+}
+QListView::item:selected {
+    border: 0px solid transparent;
+    color: #000000;
+    background: #87ceeb;	/* focus color */
+}
+QListView::item:hover {
+    color: #000000;
+    background: #87ceeb;	/* focus color */
+}
+
+/* -------------------------------------------------------------------------- */
+
+QTreeView {
+    border-image: none;
+    color: #f5f5f5;							/* text color */
+    background: #696969;					/* window background color */
+    selection-background-color: #87ceeb;	/* focus color */
+}
+QTreeView::item:selected {
+    border: 0px solid transparent;
+    color: #000000;
+    background: #87ceeb;	/* focus color */
+}
+/* -------------------------------------------------------------------------- */
+
+QTreeWidget {
+    color: #f5f5f5;							/* text color */
+    background: #696969;					/* window background color */
+    selection-background-color: #87ceeb;	/* focus color */
+    border-bottom: 1px solid #000000;
+    padding: 0px;
+    margin: 0px;
+}
+
+/* -------------------------------------------------------------------------- */
+
+QTabWidget::pane { /* The tab widget frame */
+    border-top: 1px solid #000000;
+}
+
+QTabWidget::tab-bar {
+    left: 5px; /* move to the right by 5px */
+}
+
+/* -------------------------------------------------------------------------- */
+
+/* Style the tab using the tab sub-control. Note that
+ * it reads QTabBar _not_ QTabWidget! 
+ */
+QTabBar::tab {
+    background: #696969;		/* window background color */
+    min-width: 8ex;
+    padding-right: 8px;
+    padding-left: 8px;
+    border: 1px solid #000000;
+}
+
+QTabBar::tab:top {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    border-bottom-color: transparent;
+    margin-top: 2px;
+    padding-bottom: 4px;
+}
+QTabBar::tab:bottom {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    border-top-color: transparent;
+    margin-bottom: 2px;
+    padding-bottom: 4px;
+}
+
+QTabBar::tab:top:!selected  {
+    margin-top: 4px; /* make non-selected tabs look smaller */
+}
+QTabBar::tab:bottom:!selected  {
+    margin-bottom: 4px; /* make non-selected tabs look smaller */
+}
+
+/* -------------------------------------------------------------------------- */
+
+QMainWindow {
+    background: #696969;		/* window background color */
+    color: #f5f5f5;				/* text color */
+}
+QMainWindow::separator {
+    width: 10px;	/* when vertical */
+    height: 10px;	/* when horizontal */
+    background: #636363;	
+}
+QMainWindow::separator:hover {
+    background: #87ceeb;		/* focus color */
+}
+
+/* -------------------------------------------------------------------------- */
+
+QMenu {
+    background: #696969;		/* window background color */
+    color: #f5f5f5;				/* text color */
+    border: 1px solid black;
+}
+QMenu::item:selected {
+    background: #87ceeb;		/* focus color */
+}
+QMenu::item:disabled {
+    color: #b5b5b5;				/* disabled text-color */
+}
+
+NsTabMenu,
+NsTabCategoryMenu {
+    font-family: sansserif;
+    font-size: 8;
+    padding: 2px;
+    border: 1px solid black;
+    /*border: 1px solid transparent;  reserve space for selection border */
+}
+NsTabMenu::item,
+NsTabCategoryMenu::item {
+    padding: 1px 1px 1px 1px;
+}
+NsTabMenu::separator {
+    color: #000000;
+}
+
+QPushButton {
+    background-color: #393939;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 8px;
+    border-color: #f5f5f5;
+    font: bold 10px;
+    min-width: 12em;
+    padding: 4px;
+}
+QPushButton:pressed {
+    background-color: black;
+    border-style: inset;
+}
+
+/* -------------------------------------------------------------------------- */
+
+QMenuBar {
+    spacing: 16px; /* spacing between menu bar items */
+    color: #f5f5f5;				/* text color */
+    background: #696969;		/* window background color */
+    border-bottom: 1px solid #000000;
+    padding-bottom: 2px;
+}
+
+QMenuBar::item {
+    color: #f5f5f5;				/* text color */
+    /*background: #696969;*/		/* window background color */
+    border-bottom: 0px solid transparent;
+    padding-bottom: 2px;
+}
+
+/* -------------------------------------------------------------------------- */
+
+QStatusBar {
+    color: #f5f5f5;				/* text color */
+    background: #696969;		/* window background color */
+    border-top: 1px solid #000000;
+}
+
+/* -------------------------------------------------------------------------- */
+
+QToolBar {
+    border: 1px solid transparent;
+    spacing: 5px;
+    color: #f5f5f5;				/* text color */
+    background: #696969;		/* window background color */
+}
+
+NsTimeToolBar {
+    padding-top: 2px;
+    padding-bottom: 2px;
+    border-top: 1px solid #000000;
+}
+
+/*
+QToolBar::handle {
+    image: url(:/Vsepartoolbar.png);
+}
+QToolBar::separator {
+    image: url(:/Vsepartoolbar.png);
+}
+*/
+
+/* -------------------------------------------------------------------------- */
+
+QLabel {
+    margin: 2px;
+    background: transparent;	/* transparent background */
+}
+
+NsValueLabel,
+NsMetaLabel {
+    font-size: 12px;
+    min-width: 150px;
+}
+
+/* -------------------------------------------------------------------------- */
+
+QSpinBox {
+    padding-right: 10px; /* make room for the arrows */
+    padding-bottom: 2px;
+    border-width: 1px;
+    border-style: solid;
+    border-color: #838383;					/* input border color */
+    background: #393939;					/* text background */
+    selection-background-color: #87ceeb;	/* focus color */
+}
+
+/* -------------------------------------------------------------------------- */
+
+QCheckBox {
+    background: transparent;	/* transparent background */
+}
+QCheckBox::indicator:checked,
+QCheckBox::indicator:unchecked {
+    color: #f5f5f5;				/* text color */
+}
+
+/* -------------------------------------------------------------------------- */
+
+QComboBox, 
+QComboBox:disabled,
+QComboBox:read-only {
+    border-width: 1px;
+    border-style: solid;
+    border-color: #a0a0a0;					/* input border color */
+    background: #393939;					/* text background */
+    color: #f5f5f5;							/* text color */
+    padding: 1px 18px 1px 3px;
+}
+/*QComboBox::down-arrow {
+    border: 1px solid #000000;
+}*/
+QComboBox::item:selected {
+    background: #87ceeb;					/* focus color */
+}
+QComboBox QAbstractItemView {
+    border: 1px solid #000000;
+    selection-background-color: #87ceeb;	/* focus color */
+}
+
+/* -------------------------------------------------------------------------- */
+
+QPlainTextEdit,
+QTextEdit,
+QLineEdit {
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: #a0a0a0;					/* input border color */
+    color: #f5f5f5;							/* text color */
+    background: #393939;					/* text background */
+    selection-background-color: #87ceeb;	/* focus color */
+}
+QPlainTextEdit:focus,
+QTextEdit:focus,
+QLineEdit:focus {
+    border-color: #87ceeb;					/* focus color */
+}
+
+NsTimeLineEdit {
+    min-width: 40px;
+    max-width: 40px;
+}
+
+NsValueLineEdit[modeName="expression"] {
+    /*background-color: yellow;*/
+}
+NsValueLineEdit[modeName="evaluation"] {
+    color: #444444;
+    background-color: #D7C36E;
+}
+
+/* -------------------------------------------------------------------------- */
+
+NsValueIntSlider,
+NsValueFloatSlider {
+    background: transparent;
+}
+NsValueIntSlider::grove,
+NsValueFloatSlider::grove {
+    background: transparent;	/* transparent background */
+}
+NsValueIntSlider::groove:horizontal,
+NsValueFloatSlider::groove:horizontal {
+    border: 1px solid #000000;
+    height: 4px;
+    border-radius: 3px;
+    background: #696969;
+}
+NsValueIntSlider::handle:horizontal,
+NsValueFloatSlider::handle:horizontal {
+    background: transparent;
+    border: 1px solid #000000;
+    width: 8px;
+    margin: -6px 0;
+}
+
+NsTimeSlider {
+    color: #000000;
+}
+
+/* -------------------------------------------------------------------------- */
+
+NsOpObjectBox,
+NsBodyObjectBox {
+    background-color: #757575;
+    border: 1px solid black;
+    padding-top: 18px;
+    padding-bottom: 0px;
+    font-weight: bold;
+    font-size: 16px;
+}
+NsOpObjectBox::indicator,
+NsBodyObjectBox::indicator {
+    subcontrol-position: center left;
+    width: 16px;
+    height: 16px;
+}
+NsOpSectionBox,
+NsOpHeaderBox,
+NsOpMetaBox,
+NsBodySectionBox,
+NsBodyHeaderBox {
+    background-color: #818181;
+    border: 1px solid black;
+    padding-top: 16px;
+    padding-bottom: 0px;
+    font-weight: bold;
+    font-size: 14px;
+}
+NsTileLayoutBox,
+NsShapeBox,
+NsChannelBox {
+    border: 1px solid black;
+    padding-top: 16px;
+    padding-bottom: 0px;
+    font-weight: bold;
+    font-size: 12px;
+}
+NsTileLayoutBox,
+NsShapeBox {
+    background-color: #878787;
+}
+NsChannelBox {
+    background-color: #878787;
+}
+NsOpSectionBox::indicator,
+NsOpHeaderBox::indicator,
+NsBodySectionBox::indicator,
+NsBodyHeaderBox::indicator {
+    subcontrol-position: center left;
+    width: 14px;
+    height: 14px;
+}
+NsTileLayoutBox::indicator,
+NsShapeBox::indicator,
+NsChannelBox::indicator {
+    subcontrol-position: center left;
+    width: 12px;
+    height: 12px;
+}
+NsOpObjectBox::title,
+NsOpSectionBox::title,
+NsOpHeaderBox::title,
+NsOpMetaBox::title,
+NsBodyObjectBox::title,
+NsBodySectionBox::title,
+NsBodyHeaderBox::title,
+NsTileLayoutBox::title,
+NsShapeBox::title,
+NsChannelBox::title {
+    background-color: transparent;
+    subcontrol-position: top left;
+    margin-top: 2px;
+    margin-left: 2px;
+}
+NsOpObjectBox::indicator:checked,
+NsOpSectionBox::indicator:checked,
+NsOpHeaderBox::indicator:checked,
+NsOpMetaBox::indicator:checked,
+NsBodyObjectBox::indicator:checked,
+NsBodySectionBox::indicator:checked,
+NsBodyHeaderBox::indicator:checked,
+NsTileLayoutBox::indicator:checked,
+NsShapeBox::indicator:checked,
+NsChannelBox::indicator:checked {
+    image: url(:/images/down-arrow-16.png);
+}
+NsOpObjectBox::indicator:unchecked,
+NsOpSectionBox::indicator:unchecked,
+NsOpHeaderBox::indicator:unchecked,
+NsOpMetaBox::indicator:unchecked,
+NsBodyObjectBox::indicator:unchecked,
+NsBodySectionBox::indicator:unchecked,
+NsBodyHeaderBox::indicator:unchecked,
+NsTileLayoutBox::indicator:unchecked,
+NsShapeBox::indicator:unchecked,
+NsChannelBox::indicator:unchecked {
+    image: url(:/images/up-arrow-16.png);
+}
+
+/* -------------------------------------------------------------------------- */

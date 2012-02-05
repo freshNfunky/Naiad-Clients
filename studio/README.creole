@@ -1,0 +1,117 @@
+= Installing the Build Tools and Configuring Your Environment
+
+The sections below describe how to build Naiad Studio on Linux and Windows.
+
+== Linux
+
+Since you will be compiling and building Naiad Studio from source, certain
+requirements have to be met:
+
+* Naiad must be installed.
+* A C++ compiler such as gcc/g++ must be present.
+* [[http://www.cmake.org|CMake]] must be installed.
+* [[http://git-scm.com|git]] must be installed.
+* [[http://qt.nokia.com/downloads/|Qt 4.7.4]] must be installed.
+* [[http://www.doxygen.org|doxygen]] must be installed.
+* libXt-dev (Xterm development package) must be installed.
+* libgl-dev (OpenGL development package) must be installed.
+
+These are very common tools you can find on any flavor of Linux. 
+
+Use git to create a local copy of the Naiad Studio source code on your machine. 
+The following command downloads the Naiad Studio source into the 
+//{{{$HOME}}}/ExoticMatter/Naiad-Studio.git// directory:
+{{{
+git clone git://github.com/ExoticMatter/Naiad-Studio.git ~/ExoticMatter/Naiad-Studio.git
+}}}
+
+Make sure that the following environment variables are set:
+
+* {{{OMP_ENABLED}}} = YES
+* {{{CC}}} = gcc
+* {{{CXX}}} = g++
+* {{{EM_COMPILER}}} = gcc
+* {{{EM_PLAT}}} = LINUX
+* {{{EM_ARCH}}} = `uname -m`
+* {{{DEV_ROOT_NSTUDIO}}} = //<path to Naiad Studio source, e.g. {{{$HOME}}}/ExoticMatter/Naiad-Studio.git>//
+* {{{NAIAD_PATH}}} = //<path to your Naiad installation, e.g. {{{$HOME}}}/ExoticMatter/naiad-x86_64>//
+
+Make sure that the following paths are added to your {{{$PATH}}}:
+{{{
+$DEV_ROOT_NSTUDIO/scripts 
+$NAIAD_PATH/clients/ncmd/bin 
+$NAIAD_PATH/clients/nstudio/bin 
+$NAIAD_PATH/server/lmx/$EM_ARCH
+}}}
+Make sure that the following paths are added to your {{{$LD_LIBRARY_PATH}}}:
+{{{
+$NAIAD_PATH/server/lib
+$NAIAD_PATH/server/python
+$NAIAD_PATH/clients/nstudio/lib
+}}}
+
+Your system is now configured to build Naiad Studio. CMake is used to generate
+the necessary build files. Run the provided setup script in the terminal:
+{{{
+init-cmake-nstudio
+}}}
+This generates make files in //{{{$DEV_ROOT_NSTUDIO}}}/stage-LINUX-x86_64/release// 
+and //{{{$DEV_ROOT_NSTUDIO}}}/stage-LINUX-x86_64/debug//. To build Naiad Studio
+in release mode (and similarly in debug mode), do the following:
+{{{
+cd $DEV_ROOT_NSTUDIO/stage-LINUX-x86_64/release
+make install
+}}}
+If your system is correctly configured your build should complete without 
+errors. You are now a Naiad Studio developer!
+
+
+== Windows 7 (64-bit)
+
+The following steps are required to build Naiad Studio on Windows 7 (64-bit). 
+Currently, Microsoft Visual Studio 2010 is the only supported compiler. 
+**It is very important that you install Service Pack 1 (SP1), both for 
+Windows and for MSVC. Note that these are two separate things!** 
+
+* Install Naiad.
+* Install [[http://www.cmake.org|CMake]].
+* Install [[http://code.google.com/p/msysgit/|Git Bash]].
+* Install [[http://www.rapidee.com|Rapid Environment Editor]].
+* Install [[http://www.doxygen.org|doxygen]].
+* Install Qt. The best way to do this is to build the Qt libraries from source, 
+which is available [[http://get.qt.nokia.com/qt/source/qt-everywhere-opensource-src-4.7.4.tar.gz|here]]. 
+Instructions for building the Qt libraries from source can be found [[http://doc.qt.nokia.com/4.7-snapshot/install-win.html|here]]. 
+Make sure to use the following command during configuration:
+{{{
+configure -debug-and-release -opensource -platform win32-msvc2010
+}}}
+
+We will use Git Bash to create a local copy of the Naiad Studio source code. 
+Open a Git Bash terminal and use the following command to download the source:
+{{{
+git clone git://github.com/ExoticMatter/Naiad-Studio.git ~/ExoticMatter/Naiad-Studio.git
+}}}
+This creates a directory called //ExoticMatter/Naiad-Studio.git// in your home directory and
+downloads the Naiad Studio source code into that directory.
+
+Next, we need to set up a couple of environment variables. 
+The following **User Variables** need to be set:
+* {{{QT_DIR}}} = //<path to your Qt installation, e.g. {{{%USERPROFILE%}}}\qt-4.7.4>//
+* {{{EM_ARCH}}} = x86_64
+* {{{EM_COMPILER}}} = MSVC
+* {{{EM_PLAT}}} = WINDOWS
+* {{{DEV_ROOT_NSTUDIO}}} = //<path to Naiad Studio source, e.g. {{{%USERPROFILE%}}}\ExoticMatter\Naiad-Studio.git>//
+* {{{NSTUDIO_QT_PATH}}} = //<path to your Qt installation, e.g. {{{%USERPROFILE%}}}\qt-4.7.4>//
+* {{{NAIAD_PATH}}} = //<path to your Naiad installation, e.g. {{{%USERPROFILE%}}}\ExoticMatter\naiad-0.6-WINDOWS-x86_64>//
+* {{{PATH}}} = {{{%DEV_ROOT_NSTUDIO%}}}\scripts; {{{%NAIAD_PATH%}}}\clients\ncmd\bin; {{{%NAIAD_PATH%}}}\clients\nstudio\bin; {{{%NSTUDIO_QT_PATH%}}}\lib; {{{%NSTUDIO_QT_PATH%}}}\bin;
+
+Save the changes and don't forget to close and re-open any Git Bash windows. 
+Now that we have downloaded the source code and configured our environment it is 
+time to generate the files used to build Naiad Studio. The Naiad Studio source 
+comes with a little script that handles this task. In Git Bash type:
+{{{
+init-cmake-nstudio-win-rel
+}}} 
+This generates a MSVC solution in //{{{%DEV_ROOT_NSTUDIO%}}}\stage-WINDOWS-x86_64\release//. 
+Open the solution and build the INSTALL project. If this project builds without 
+errors you should congratulate yourself on becoming a Naiad Studio developer! 

@@ -1,0 +1,259 @@
+Ideas
+=====
+
+This document is a somewhat unstructured collection of ideas that may or may
+not be used in the development of Naiad Studio.
+
+
+General
+-------
+
+Localisation - use tr() for all strings that need localisation so that we can
+do it easily if and when we need it.
+
+Ni callbacks for everything? Then, emit signals from these callbacks, and
+not from Ns functions implementing commands etc. Means less logic is needed
+in Naiad Studio.
+
+Divide Ns class into Ns, NsGlobal, NsNop etc?
+
+Scripting... Define commands, and unify with Ni functions. Command log.
+
+
+Solving
+-------
+
+When solve is in progress, some commands must be disabled. Other commands, that
+are allowed but affect the solve, shall just reset the range of valid frames.
+Command that don't affect the solve, e.g. changing the selection, moving things
+around in the graph, and most things dealing with scopes, should be enabled
+and not affect the range of valid frames.
+
+We should solve in a separate thread, to make the UI more responsive during
+a solve.
+
+
+Styling
+-------
+
+Do all the styling at once - use platform specific styles for now.
+Try out our own style using style sheets and/or proxy style.
+Eventually create a QStyle (or QProxyStyle?) subclass that does it all.
+Make it possible to use Naiad Studio with any style, but make our own
+'nstudio' style the default.
+
+Separate style from palette and create our own default palette as well?
+
+Make NOP colors, signature colors, sigature icons etc customizable.
+This is separate from the style, and probably also from the palette.
+
+
+User Settings
+-------------
+
+Store main window position and state, file dialog path, project path,
+recent scenes etc.
+
+Store also information for each scene file, that is not stored in Ni file:
+Graph view position and zoom scale.
+3D view position, scale, rotation etc.
+Current frame, visible frame range.
+
+
+Help system - NsHelpView
+-----------
+
+Use status tips and tool tips where useful.
+
+Use What's This? Probably not so useful.
+
+Use Qt Help Framework to create online documentation, which can be accessed
+using Qt Assistant, or be built into the application using the QHelpEngine API?
+
+Or, just have a way to display HTML / RTF text for the selected NOPs in the
+graph in a separate dockable Help window? This is better if we want to include
+help for user defined NOPs, and have a way for Naiad to extract documentation
+from the NOP headers and body signatures. Use QTextEdit subclass if we don't
+need links, or QTextBrowser subclass if we need links.
+
+Could also have an Info window, containing statistics and other information
+from the solver for the selected NOPs.
+
+Display help for global parameters when no NOP is selected?
+
+Display help for NOP when corresponding button hovered in NsNopTabWidget?
+
+
+Code documentation
+------------------
+
+Document all types (classes, enums etc.), functions and member variables using
+simple Doxygen-style comments. Create a Doxyfile and some other files to make
+Doxygen generate the documentation we want.
+
+
+Main window - NsMainWindow
+-----------
+
+Tool bar with file, edit and zoom commands etc? Need to find/create icons.
+
+Additional 3D view tool bar? Also needs icons.
+
+
+Message window - NsMessageWidget
+--------------
+
+Have checkboxes (or checkable tool buttons) for Info, Warnings and Errors.
+
+Now all Naiad Studio messages go through Ns. Naiad messages go to console.
+Naiad should have a message callback that handles messages from Naiad, and
+could be used for Naiad Studio messages as well, to get uniform handling.
+
+Messages could consist of more than just a type and a string.
+A long name could be used to map the error to a NOP instance, plug or parameter.
+(Or even a list of long names, for errors concerning more than one item.)
+Then, selecting an error message could select the corresponding long name.
+
+
+Command window
+--------------
+
+Have radio buttons (or exclusive checkable tool buttons) for Log / Stack.
+Log shows log of commands, corresponding to a script. Stack shows undo stack.
+
+
+Curve editor - NsCurveView
+------------
+
+Combine with timeline?
+Or use as alternative to timeline, but still keep timeline?
+
+Inherit from NsGraphicsView - a base class for the graph and curve views.
+
+Use paramater editor to select which curves are visible.
+Make sure locked parameters cannot be modified.
+Show parameter names in curve editor? As tooltips or always?
+
+
+Timeline - NsTimeLineToolBar + NsTimeLineSlider
+--------
+
+Show frames as intervals, not positions, in timeline.
+
+In live mode, Naiad informs us when a new frame becomes available.
+How will it work in non-live mode?
+Does Naiad know when we start the program if an existing simulation on disk is
+valid? Do this using time stamp on .nip file vs time stamp on simulation file?
+Since those files are completely independent, something like that must be done.
+(Or, just treat all disk data as available but invalid?)
+
+TimestepLine - separate timeline for  timesteps within a frame.
+
+
+NOP tool windows - NsNopTabWidget
+----------------
+
+Use a flow layout?
+See layouts/flowlayout example. (Does not increase/decrease height, though.)
+
+Make it possible to create NOPs using drag and drop. A drag from a tool button
+could result in a dragged NOP when the cursor enters the graph view. While
+dragging, draw as selected (and moving) "pending" NOP. Unselect all and create
+NOP on drop inside graph view.
+
+Colors for NOP categories - use the first if NOP has more than one.
+Customizable? Through user settings?
+
+
+Parameter window - NsNopParameterWidget, NsGlobalParameterWidget
+----------------
+
+For curve view - have a checkable tool button that is used to decide whether
+curve is shown in curve view. When it is clicked, the color of the name or
+the button could match the color of the curve in the graph. Show name in bold
+when curve or a key frame on curve is selected?
+Should the fact that a curve is shown be saved, or is that information lost
+when the node loses its selection?
+
+Performance improvement - keep all boxes, for the different NOPs, so that they
+don't have to be created everytime a NOP is selected, and show/hide instead
+of deleting/creating? Must delete when NOP is deleted, though.
+
+Make body names available in some form of list box, so that their names are
+available and can be used when editing parameters. Use a QCompleter for this?
+Or a button that opens a pop-up menu / combobox?
+
+Context menu, with exclusive items Constant, Expression and Curve.
+Save as meta data.
+
+Validators for Constants. Make red or change back to previous value when invalid
+value is given? Red on return, back to previous on tab, probably.
+
+For Expressions and Curves, show current value, with different background
+color, when value is not being edited. When value is edited, increase size
+of box and show expression. Validate expression, and make red if invalid?
+
+Should be possible to create key frames and set/change key frame values.
+Maybe this is the Curve mode, and Expression shows the curve expression?
+
+
+Graph window - NsGraphView, NsGraph
+------------
+
+BOP inputs and outputs have a signature, which determines if they can be
+connected. Have a pixmap for the inputs and outputs that represents
+the signature. Make it possible for the pixmap to be defined by the user
+in the .nop file? (And have a default pixmap for user defined NOPs with
+no pixmap.)
+
+Or, use fixed shapes, but also use colors, which can be customized and
+stored as user settings?
+
+If we want to use scroll bars, we have to calculate the view's scene rect
+dynamically, so that it is always the union of the view rect and the bounding
+rect of the (NOP) items (plus a margin). Must be updated when the view is
+resized or zoomed, and when items are added to, removed from or moved within
+the scene.
+
+If we don't have scroll bars, we need some other way for the user to determine
+the bounds of the scene. This could be done using a "mini view", which shows
+the entire scene, and the current view as a rectangle in the view.
+
+We cannot use setTransformationAnchor(AnchorUnderMouse). Instead we could do
+this ourselves, but only when zooming through dragging, and using the last click
+as anchor, not the current mouse position.
+
+We could use QGraphicsItem types for our subclasses, to make it possible to use
+qgraphicsitem_cast. But this may not be useful, since we have an inheritance
+hierarchy. How does qgraphicsitem_cast deal with that?
+
+Scopes can be moved individually, but should they also move when the NOP to
+which they are connected is moved?
+
+If we introduce text notes, they can also be selected. Along with NOPs, since
+they are top level items? Or is a note always attached to a NOP, and moved
+with it?
+
+Left click = Select / Move
+Middle click = Pan
+Right click = Zoom / menu (if we don't need a menu when no item is selected)
+
+Make at least some of these customizeable, so it can work like in Maya
+(Alt + Right = Zoom, Alt + Middle = Pan).
+
+Context menu, with commands useful for the current selection.
+
+Adding NOPs by pressing TAB and typeing name of NOP type?
+
+Scale and pan actions as undoable commands? User setting for this?
+
+
+3D View
+-------
+
+Should use actions, and possibly commands, for changing mode etc.
+Should have a toolbar, and commands in menus. Possibly also a context menu.
+
+Share selection with graph view.
+
+Scale, pan, rotate etc. through undoable commands? User setting for this?

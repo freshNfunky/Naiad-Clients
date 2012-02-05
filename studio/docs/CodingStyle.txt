@@ -1,0 +1,272 @@
+Coding Style
+============
+
+This document describes the C++ coding style guidelines for Naiad Studio.
+The guidelines correspond, with a few exceptions, to the coding style used
+for the Qt source code.
+
+The main goal of these guidelines is to make the code consistent and easily
+readable and understandable, and to enforce documentation of the code using
+simple Doxygen style comments, making it possible to generate comprehensive
+source code documentation, while keeping the comments in the source code
+readable.
+
+Please use these guidelines as guidelines, and not as something that has to be
+adhered to in every single line of the code. If you feel you have a good reason
+to break them, feel free to do so. The guidelines are here to make our lives
+easier, not more difficult...
+
+
+Names
+-----
+
+The following guidelines deal with naming of types, attributes, variables,
+constants, functions, namespaces etc:
+
+1. The following names shall be in mixed case starting with uppercase:
+
+   * Types
+   * Named constants
+   * Enum values
+   * Namespaces
+
+2. The following names shall be in mixed case starting with lowercase:
+
+   * Methods and functions
+   * Attributes not made public through an accessor
+   * Variables
+
+3. The following names shall be in mixed case starting with lowercase,
+   preceded by an underscore:
+
+   * Attributes made public through an accessor
+
+4. Names of template parameters shall be single uppercase letters.
+
+5. Names shall be descriptive, and abbreviations shall be avoided, whenever
+   feasible.
+
+6. Names of methods and functions shall start with a verb.
+
+   createActions()
+   readSettings()
+
+7. Accessors shall begin with 'set', but not with 'get'.
+
+   int length();
+   void setLength(int length);
+
+8. Boolean variables and methods (including accessors) shall use suitable
+   prefixes, such as 'is', 'has' or 'can'.
+
+   bool isOpen;
+   bool hasBorder(NsFrame &frame);
+
+9. Plural form shall be used for names representing a collection of objects.
+
+   QList<QRect> rectangles;
+   int points[Point];
+
+10. Needless to say, all names shall be in English.
+
+
+Files
+-----
+
+The following guidelines deal with the naming, contents and structure of
+source code and header files:
+
+1. C++ header files shall have the extension ".h", and C++ source files
+   shall have the extension ".cc".
+
+2. A class shall be declared in a header file and defined in a source file,
+   where the names of the files match the name of the class. Exceptions to
+   this rule are:
+
+   * Small classes only used by a single class, which may be defined in the
+     same file as the class they are used by.
+   * Collections of small classes, e.g. undo command classes, which may be
+     collected into files declaring/defining several such classes.
+
+3. All definitions, except inline functions, shall reside in source files.
+   Inline functions shall be defined where they are declared.
+
+4. The order of definitions in the source file shall be the same as the order
+   of the corresponding declarations in the header file.
+
+5. Attributes shall normally be initialised in the constructor, in the order
+   in which they are declared in the header file.
+
+6. File content shall be kept within 80 columns, whenever feasible.
+
+7. Lines longer than 80 columns shall be split in a way that makes the line
+   readable, e.g. by breaking after a comma or an operator, and aligning the
+   new line with the beginning of the expression on the previous line.
+
+8. Header files shall contain an include guard. The defined constant shall
+   consist of the file name in upper case letters and underscores, e.g.
+   NS_GRAPHVIEW_H.
+
+   #ifndef NS_GRAPHVIEW_H
+   #define NS_GRAPHVIEW_H
+   ...
+   #endif // NS_GRAPHVIEW_H
+
+9. '#include' statements shall be located at the top of the file, after the
+   header. Header files shall be included in the following order: Standard
+   headers, Qt headers, other 3rd-party headers, project headers from another
+   lib, local project headers.
+
+10. In source files, include <QtGui> instead of individual Qt headers as soon
+    as more than two Qt headers are needed.
+
+11. In header files, use forward declarations instead of includes when the
+    full class declaration is not needed.
+
+
+Layout
+------
+
+The following guidelines deal with indentation and use of whitespace:
+
+1. The basic indentation step shall be 4.
+
+2. Spaces shall always be used instead of tabs.
+
+3. All blocks shall be indented, except for namespaces and access specifiers
+   ('public:', 'private:' etc.) in class declarations.
+ 
+   class MyClass : public BaseClass
+   {
+   public:
+       ...
+   private:
+       ...
+   };
+
+4. Opening brackets shall stand on their own line only in namespace defintions,
+   class definitions, and non-inline function definitions.
+
+   enum SomeEnum { Value1, Value2, Value3 };
+
+   if (x > y) {
+       x -= 5;
+       y += 5;
+   }
+
+5. Loop statements such as 'if', 'for', 'do...while' and 'while' shall have
+   brackets around their blocks only if the blocks contain more than one line.
+   'for' statements with empty bodies should be avoided.
+
+6. The condition in an 'if' statement shall always be put on a separate line.
+
+   if (x == 5)
+       y = x;
+
+7. C++ pointers and references shall have their reference symbol next to the
+   name rather than to the type.
+
+   double *x;
+   MyClass &myObject;
+
+8. In class declarations, 'public' declarations shall precede 'protected'
+   declarations which in turn shall precede 'private' declarations.
+
+9. In a definition, the function return type shall be put above the function
+   name (not to the left of it).
+
+   SomeType
+   someFunction(SomeOtherType &object)
+   {
+       ...
+   }
+
+10. The following items shall be surrounded by a space character:
+
+   * Conventional operators
+   * Curly braces used in single-lined enum declarations
+   * Curly braces used in single-lined inline function definitions
+
+   a = 5 + 3;
+
+11. The following items shall be followed by a space character:
+
+   * C++ reserved words
+   * Commas
+   * Semicolons in 'for' statements
+
+   for (x = 0; x < 10; ++x)
+       doSomething(x, y, z);
+
+12. Opening parentheses shall not be followed by white space. Closing
+    parentheses shall not be preceded by white space.
+
+13. Logical units within a block shall be separated by one blank line,
+    and each block shall start with a comment if it is unclear what the
+    block does.
+
+14. Function definitions shall be separated by two blank lines.
+
+
+Documentation
+-------------
+
+The following guidelines deal with comments and documentation of the code:
+
+1. All comments shall be written in English, using full sentences terminated
+   by a full stop ('.').
+
+2. Use '//' for single-line text comments, and '//' or '/* */' for multi-line
+   text comments. '\#if 0 ... \#endif' preprocessor directives can be used to
+   temporarily disable code without erasing it. Eventually, such code shall be
+   removed, though.
+
+3. Functions and methods shall be documented using simple Doxygen comments where
+   they are defined. For functions and methods defined in a source file, the
+   comments shall include a header, followed by a brief description ('//!') of
+   the function/method, and may also contain a detailed description ('/*!' ...
+   '*/'), if that is considered necessary. The header and the function shall be
+   separated by one blank line.
+
+   // myFunction
+   // ----------
+   //! A brief description of the function, normally on one line.
+   /*! An optional detailed description,
+       normally on several lines. */
+
+   void
+   myFunction(int x)
+   {
+       ...
+   }
+
+4. For inline functions, defined on a single line in the header file, a brief
+   description just above the definition is enough.
+
+   //! A brief description of the function.
+   void myInlineFunction(int x) { a = x; }
+
+5. Classes shall be documented where they are declared, the same way functions
+   and methods are documented.
+
+   // MyClass
+   // -------
+   //! A brief description of the class, normally on one line.
+   /*! An optional detailed description,
+       normally on several lines. */
+
+   class MyClass : public BaseClass
+   {
+       ...
+   };
+
+6. For structs, enums and attributes, a brief description is enough.
+   Enum values and attributes may be documented after the value, using '//!<'.
+
+   //! Type of line used for drawing.
+   enum LineType
+   {
+       NoLine,     //!< No line at all.
+       ThinLine,   //!< Thin line (1-3 pixels).
+       ThickLine,  //!< Thick line (3-9 pixels).
+   };

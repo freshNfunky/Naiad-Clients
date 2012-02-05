@@ -1,0 +1,14 @@
+Dummy BodyOp Graph-Note
+|* 
+   <h3>Overview</h3>
+   The Graph-Note represents a sticky note in the Graph View.
+*|
+{
+    ClassName "GRAPH_NOTE"
+    Category  "User"
+
+    ParamSection "Note"
+    {
+    String "Text" ""
+    }
+}

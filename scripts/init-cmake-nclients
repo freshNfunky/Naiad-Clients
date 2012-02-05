@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# in case OMP_ENALBED is NOT defined in your local environment
+if [ -z ${OMP_ENABLED} ]; then
+    echo exporting default OMP_ENABLED = NO
+    export OMP_ENABLED=NO
+fi
+
+if [ -z ${EM_COMPILER} ]; then
+    echo exporting default EM_COMPILER = gcc
+    export EM_COMPILER=gcc
+fi
+
+if [ -z ${CC} ]; then
+    echo exporting default CC = gcc
+    export CC=gcc
+fi
+
+if [ -z ${CXX} ]; then
+    echo exporting default CXX = g++
+    export CXX=g++
+fi
+
+# start the build setup...
+
+rm -rf $DEV_ROOT_NCLIENTS/stage-$EM_PLAT-$EM_ARCH
+mkdir  $DEV_ROOT_NCLIENTS/stage-$EM_PLAT-$EM_ARCH
+
+cd $DEV_ROOT_NCLIENTS/stage-$EM_PLAT-$EM_ARCH
+mkdir debug
+mkdir release
+
+cd debug
+cmake -DCMAKE_BUILD_TYPE=DEBUG -DCMAKE_INSTALL_PREFIX=$NAIAD_PATH $DEV_ROOT_NCLIENTS
+
+cd ..
+cd release
+cmake -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=$NAIAD_PATH $DEV_ROOT_NCLIENTS

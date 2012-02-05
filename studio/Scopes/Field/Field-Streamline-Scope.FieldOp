@@ -1,0 +1,63 @@
+Dummy FieldOp Field-Streamline-Scope
+{
+    ClassName "FIELD_SCOPE"
+    Category  "Field Scope"
+
+    ParamSection "Streamline Settings"
+    {
+	Float "Streamline Spacing" "@'Master Voxel Size'*2" MIN=1e-6 
+    	|* The uniform spacing between each streamline, expressed in 
+	   world-space units. *|
+
+	Float "Streamline Time" "1/@'Fps'" MIN=1e-6
+	|| How long (in seconds) to run the streamline.
+
+	Int "Samples Per Streamline" "3" MIN=1 (1 10)
+	|| The temporal sampling frequency of each streamline.
+    }
+
+    ParamSection "Quality"
+    {
+	Float "Interactive Voxel Scale" "1"
+	|* Used to compute the interactive voxel-size used sampling the scoped 
+	   field.  If the field being scoped has a tile-layout attached, this
+	   parameter scales the voxel-size of that layout, otherwise the
+	   Master Voxel Size is scaled instead. *|
+    }
+
+    ParamSection "Style"
+    {
+        Vec3f "Head Color" "1" "1" "1"
+	|| The color of the streamlines at the head (origin).
+
+        Vec3f "Tail Color"  "0.5" "0.3" "0.3"
+    	|| The color of the streamlines at the tail.
+    }
+
+    ParamSection "Transform"
+    {
+	Vec3f  "Translate" "0" "0" "0"
+     	Vec3f  "Rotate"    "0" "0" "0"
+     	Vec3f  "Scale"     "1" "1" "1"
+    }
+
+    EnumGroup ShadowVoxelSize
+    {
+	"Body"
+	"Master"
+    }
+
+    ParamSection "Guides"
+    {		 
+        Toggle "Display Voxel Shadow" "On"
+	|* Controls whether or not a grid is drawn under each body, where
+	   each grid voxel has the size defined by the "Voxel Size" parameter
+	   (see below). *|
+
+	ShadowVoxelSize "Shadow Voxel Size" "Body"
+	|* Controls the size of each shadow voxel: Body = use the body's own
+	   voxel-size, Master = Use the Master Voxel Size. *|
+    }
+
+    FieldOp Input "scope-input"
+}

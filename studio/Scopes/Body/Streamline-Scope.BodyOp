@@ -1,0 +1,94 @@
+Dummy BodyOp Streamline-Scope
+|*
+   <h3>Overview</h3>
+   The Streamline-Scope draws streamlines through a body's vector-valued field
+   channel in Naiad Studio's 3D viewport.
+   <p>
+   A body is admitted if it has a Field-Shape with the appropriate vector-valued
+   field channel. The body must also be listed in the "Show Bodies" parameter
+   (see below).
+   </p><p><h3>General Scope Information</h3>
+   Scopes are Body Operators (BOPs) because they operate on bodies (they draw
+   them in the 3D viewport).  Scopes are implemented as "Dummy BOPs" which
+   means they are ignored by Naiad during a solve and will never affect your
+   simulations. It is thus safe to leave your scopes in your .ni files, even
+   for command-line solves.  Scopes are only ever used by Naiad Studio.
+   </p><p>
+   Bodies are fed to scopes via feeds that you connect to plugs on BOPs in the
+   Naiad Graph, just as you would connect "regular" feeds between BOP plugs.
+   Unlike "regular" feeds, however, the scope feeds may connect to both input
+   and output plugs.
+   </p><p>
+   If the current frame has live cached data (indicated by the green or gray
+   band in the timeline) you will immidiately see the cached bodies for that
+   frame flowing to your scope.  If the current frame falls outside the live
+   cache interval, Naiad Studio will attempt to load bodies from the EMP
+   specified by the plug's BOP's "EMP Cache" parameter, if such a parameter
+   exists. This allows you to seamlessly "scrub" through the results of
+   your solve regardless if it is a live solve running in Naiad Studio or
+   the results of a command-line simulation that ran (or is currently running)
+   on the farm or another machine.
+*|
+{
+    ClassName "BODY_SCOPE"
+    Category  "Body Scope"
+
+    ParamSection "Bodies"
+    {
+    BodyNameList "Show Bodies" "*"
+    |* This parameter is used to specify a white-space separated list
+       of body-names which will be drawn by this scope. The default
+       argument of * is a wildcard representing all bodies fed to the
+       scope. If the current frame has access to the solve cache, you
+       can right-click on this parameter to get a context-menu of
+       available body-names. 
+    *|
+    }
+
+    ParamSection "Clip Box"
+    {
+    Vec3f  "Translate" "0" "0" "0"
+    || Clip-box translation.
+
+    Vec3f  "Rotate"    "0" "0" "0"
+    || Clip-box rotation.
+
+    Vec3f  "Scale"     "1" "1" "1"
+    || Clip-box scale.
+    }
+
+    ParamSection "Channel"
+    {
+    ChannelName Field "Channel" "velocity"
+    || The name of the channel to extract the stream lines from.
+    }
+
+    ParamSection "Streamline Settings"
+    {
+    Float "Streamline Spacing" "@'Master Cell Size'*2" MIN=1e-6 
+    |* The uniform spacing between each streamline, expressed in 
+       world-space units. *|
+
+    Float "Streamline Time" "1/@'Fps'" MIN=1e-6
+    || How long (in seconds) to run the streamline.
+
+    Int "Samples Per Streamline" "3" MIN=1 (1 10)
+    || The temporal sampling frequency of each streamline.
+    }
+
+    ParamSection "Style"
+    {
+    Vec3f "Head Color" "1" "1" "1"
+    || The color of the streamlines at the head (origin).
+
+    Vec3f "Tail Color"  "0.5" "0.3" "0.3"
+    || The color of the streamlines at the tail.
+    }
+
+    Group(Field) Input b "scope-input"
+    |* Bodies are fed through this input. Only bodies matching the "Field"
+       signature are fed to the scope (e.g. bodies that have a Field-Shape).
+       Unlike "regular" inputs, scope inputs may connect to both inputs
+       and output plugs in the graph.
+    *|
+}

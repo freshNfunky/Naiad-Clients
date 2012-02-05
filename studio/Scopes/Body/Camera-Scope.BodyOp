@@ -1,0 +1,118 @@
+Dummy BodyOp Camera-Scope
+|* 
+   <h3>Overview</h3>
+   The Camera-Scope represents a perspective camera in the 3D viewport.
+   <h3>General Scope Information</h3>
+   Scopes are Body Operators (BOPs) because they operate on bodies (they draw 
+   them in the 3D viewport). Scopes are implemented as "Dummy BOPs" which
+   means they are ignored by Naiad during a solve and will never affect your
+   simulations. It is thus safe to leave your scopes in your .ni files, even
+   for command-line solves. Scopes are only ever used by Naiad Studio.
+   </p><p>
+   Bodies are fed to scopes via feeds that you connect to plugs on BOPs just
+   as you would with "regular" feeds in the Naiad Graph.
+   </p><p>
+   If the current frame has live cached data (indicated by the green
+   band in the timeline) you will immidiately see the cached bodies for that
+   frame flowing to your scope. If the current frame falls outside the live
+   cache interval, Naiad Studio will attempt to load bodies from the EMP
+   specified by the plug's BOP's "EMP Cache" parameter, if such a parameter
+   exists. This allows you to seamlessly "scrub" through the results of 
+   your solve regardless if it is a live solve running in Naiad Studio or
+   the results of a command-line simulation that ran (or is currently running)
+   on the farm or another machine.
+*|
+{
+    ClassName "CAMERA_SCOPE"
+    Category  "Body Scope"
+
+    ParamSection "Bodies"
+    {
+        BodyName "Camera Body" "*"
+        |* This parameter is used to specify a body name which will be drawn 
+           by this scope. If the current frame has access to the solve cache,
+           you can right-click on this parameter to get a context-menu of
+           available body-names. 
+        *|
+    }
+
+    ParamSection "Transform"
+    {
+     Vec3f "Translate" "5" "5" "5"
+     || Camera world space position.
+
+     Vec3f "Rotate" "-45" "45" "0"
+     || Camera world space orientation.
+
+     Vec3f "Scale" "1" "1" "1"
+     || Camera to world space scale.
+
+     Float "Orbit Radius" "8.7" HIDDEN
+     || Distance to the pivot in world space.
+
+     Toggle "Show Pivot" "Off"
+     || Whether the pivot should be shown in the Scope View.
+
+     Float  "Pivot Size" "0.1"
+     || Radius of the pivot sphere.
+    }
+
+    ParamSection "View Frustum"
+    {
+    Float "Near Clip"     "0.1"
+    || Near clip plane.
+
+    Float "Far Clip"      "100000"
+    || Far clip plane.
+
+    //Float "Angle Of View" "60" MIN=-1 MAX=165 (1 165)
+    //|| Vertical angle of view in degrees.
+
+    Float "Focal Length" "35" MIN=2.5 MAX=3500.0 (2.5 3500.0)
+    || Focal length in millimeters.
+
+    Float "Horizontal Aperture" "1.417"
+    |* Horizontal aperture, sometimes referred to as film back width, 
+       in inches. Determines the relationship between 
+       focal length and horizontal angle of view.
+    *|
+
+    Float "Vertical Aperture" "0.945"
+    |* Vertical aperture, sometimes referred to as film back height, 
+       in inches. Determines the relationship between 
+       focal length and vertical angle of view.
+    *|
+    }
+
+    ParamSection "Image Plane"	
+    {
+    FileName "Image Plane" ""
+    |* Provide an image file name that will be shown on the far clip plane. Note
+       it is possible to provide an image sequence here for flip-book playback.
+    *|
+
+
+    Int "Frame Padding" "4" MIN=0 (0 5)
+    |* The number of zeros to pad the frame number by when expanding 
+       the filename.
+    *|
+
+    Int "Frame Offset" "0"
+    || Offsets the current visible frame.
+    }
+
+    ParamSection "Interaction Settings"
+    {
+    Float "Mouse Sensitivity" "1"
+    |* A large values means that mouse movements correspond to large camera
+       movements.
+    *|
+    }
+
+    Group(Camera) Input b "scope-input" 
+    |* If camera bodies are passed to this Op the camera settings will be 
+       grabbed from those bodies and the camera will cease to be interactive. 
+       This is useful for importing a camera path modeled in third party 
+       software, exported using one of the Naiad buddies.
+    *|
+}

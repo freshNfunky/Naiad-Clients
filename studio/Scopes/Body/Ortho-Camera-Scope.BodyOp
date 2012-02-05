@@ -1,0 +1,178 @@
+Dummy BodyOp Ortho-Camera-Scope
+|* 
+   <h3>Overview</h3>
+   The Ortho-Camera-Scope represents an ortho camera in the 3D viewport. At
+   present, ortho cameras are axis-aligned. The axis can be chosen by changing
+   the view direction parameter. Ortho cameras cannot be rotated. Permitted
+   manipulation is tracking in the current view plane, zooming.
+   Zooming is implemented by scaling the near clip plane, i.e. zooming does
+   not move the camera.
+   <h3>General Scope Information</h3>
+   Scopes are Body Operators (BOPs) because they operate on bodies (they draw 
+   them in the 3D viewport). Scopes are implemented as "Dummy BOPs" which
+   means they are ignored by Naiad during a solve and will never affect your
+   simulations. It is thus safe to leave your scopes in your .ni files, even
+   for command-line solves. Scopes are only ever used by Naiad Studio.
+   </p><p>
+   Bodies are fed to scopes via feeds that you connect to plugs on BOPs just
+   as you would with "regular" feeds in the Naiad Graph.
+   </p><p>
+   If the current frame has live cached data (indicated by the green
+   band in the timeline) you will immidiately see the cached bodies for that
+   frame flowing to your scope. If the current frame falls outside the live
+   cache interval, Naiad Studio will attempt to load bodies from the EMP
+   specified by the plug's BOP's "EMP Cache" parameter, if such a parameter
+   exists. This allows you to seamlessly "scrub" through the results of 
+   your solve regardless if it is a live solve running in Naiad Studio or
+   the results of a command-line simulation that ran (or is currently running)
+   on the farm or another machine.
+*|
+{
+    ClassName "CAMERA_SCOPE"
+    Category  "Body Scope"
+
+    EnumGroup ViewDirection
+    {
+    "Front"
+    "Back"
+    "Right"
+    "Left"
+    "Up"
+    "Down"
+    }
+
+    ParamSection "View"
+    {
+    ViewDirection "View Direction" "Front"
+    || Camera view direction.
+
+    Vec3f "Translate" "0" "0" "10"
+    || Camera position in world-space.
+
+    Vec3f "Translate Front"   "0"   "0"  "10"   HIDDEN
+    Vec3f "Translate Back"    "0"   "0" "-10"   HIDDEN
+    Vec3f "Translate Right"  "10"   "0"   "0"   HIDDEN
+    Vec3f "Translate Left"  "-10"   "0"   "0"   HIDDEN
+    Vec3f "Translate Up"      "0"  "10"   "0"   HIDDEN
+    Vec3f "Translate Down"    "0" "-10"   "0"   HIDDEN
+
+    Vec3f "Rotate" "0" "0" "0" READONLY
+    || Camera rotation Euler angles (pitch, yaw, roll).
+
+    Vec3f "Rotate Front"   "0"   "0" "0" HIDDEN
+    Vec3f "Rotate Back"    "0" "180" "0" HIDDEN
+    Vec3f "Rotate Right"   "0"  "90" "0" HIDDEN
+    Vec3f "Rotate Left"    "0" "-90" "0" HIDDEN
+    Vec3f "Rotate Up"    "-90" "-90" "0" HIDDEN
+    Vec3f "Rotate Down"   "90"  "90" "0" HIDDEN
+
+    Vec3f "Scale" "1" "1" "1"
+    || Camera scale.
+
+    Vec3f "Scale Front" "1" "1" "1" HIDDEN
+    Vec3f "Scale Back"  "1" "1" "1" HIDDEN
+    Vec3f "Scale Right" "1" "1" "1" HIDDEN
+    Vec3f "Scale Left"  "1" "1" "1" HIDDEN
+    Vec3f "Scale Up"    "1" "1" "1" HIDDEN
+    Vec3f "Scale Down"  "1" "1" "1" HIDDEN
+
+    Float "Orbit Radius" "10" HIDDEN
+    || Distance to the pivot in world space.
+
+    Float "Orbit Radius Front" "10" HIDDEN
+    Float "Orbit Radius Back"  "10" HIDDEN
+    Float "Orbit Radius Right" "10" HIDDEN
+    Float "Orbit Radius Left"  "10" HIDDEN
+    Float "Orbit Radius Up"    "10" HIDDEN
+    Float "Orbit Radius Down"  "10" HIDDEN
+
+    Toggle "Show Pivot" "Off"
+    || Whether the pivot should be shown in the Scope View.
+
+    Toggle "Show Pivot Front" "Off" HIDDEN
+    Toggle "Show Pivot Back"  "Off" HIDDEN
+    Toggle "Show Pivot Right" "Off" HIDDEN
+    Toggle "Show Pivot Left"  "Off" HIDDEN
+    Toggle "Show Pivot Up"    "Off" HIDDEN
+    Toggle "Show Pivot Down"  "Off" HIDDEN
+
+    Float  "Pivot Size" "0.1"
+    || Radius of the pivot sphere.
+
+    Float  "Pivot Size Front" "0.1" HIDDEN
+    Float  "Pivot Size Back"  "0.1" HIDDEN
+    Float  "Pivot Size Right" "0.1" HIDDEN
+    Float  "Pivot Size Left"  "0.1" HIDDEN
+    Float  "Pivot Size Up"    "0.1" HIDDEN
+    Float  "Pivot Size Down"  "0.1" HIDDEN
+    }
+
+    ParamSection "View Frustum"
+    {
+    Float "Near Clip"     "0.1"
+    || Near clip plane.
+
+    Float "Near Clip Front" "0.1" HIDDEN
+    Float "Near Clip Back"  "0.1" HIDDEN
+    Float "Near Clip Right" "0.1" HIDDEN
+    Float "Near Clip Left"  "0.1" HIDDEN
+    Float "Near Clip Up"    "0.1" HIDDEN
+    Float "Near Clip Down"  "0.1" HIDDEN
+
+
+    Float "Far Clip"      "10000"
+    || Far clip plane.
+
+    Float "Far Clip Front" "10000" HIDDEN
+    Float "Far Clip Back"  "10000" HIDDEN
+    Float "Far Clip Right" "10000" HIDDEN
+    Float "Far Clip Left"  "10000" HIDDEN
+    Float "Far Clip Up"    "10000" HIDDEN
+    Float "Far Clip Down"  "10000" HIDDEN
+
+
+    Float "Zoom Factor" "1"
+    |* In orthographic projection zooming is implemented
+       by scaling appropriate elements in the projection matrix.
+    *|
+
+    Float "Zoom Factor Front" "1" HIDDEN
+    Float "Zoom Factor Back"  "1" HIDDEN
+    Float "Zoom Factor Right" "1" HIDDEN
+    Float "Zoom Factor Left"  "1" HIDDEN
+    Float "Zoom Factor Up"    "1" HIDDEN
+    Float "Zoom Factor Down"  "1" HIDDEN
+    }
+
+    ParamSection "Image Plane"	
+    {
+    FileName "Image Plane" ""
+    |* Provide an image file name that will be shown on the far clip plane. Note
+       it is possible to provide an image sequence here for flip-book playback.
+    *|
+
+
+    Int "Frame Padding" "4" MIN=0 (0 5)
+    |* The number of zeros to pad the frame number by when expanding 
+       the filename.
+    *|
+
+    Int "Frame Offset" "0"
+    || Offsets the current visible frame.
+    }
+
+    ParamSection "Interaction Settings"
+    {
+    Float "Mouse Sensitivity" "1"
+    |* A value of one means that the scene will follow the mouse when tracking.
+       Larger values will make the scene move faster, and vice versa.
+    *|
+
+    Float "Mouse Sensitivity Front" "1" HIDDEN
+    Float "Mouse Sensitivity Back"  "1" HIDDEN
+    Float "Mouse Sensitivity Right" "1" HIDDEN
+    Float "Mouse Sensitivity Left"  "1" HIDDEN
+    Float "Mouse Sensitivity Up"    "1" HIDDEN
+    Float "Mouse Sensitivity Down"  "1" HIDDEN
+    }
+}
