@@ -27,7 +27,7 @@ set                   (QT_USE_QTOPENGL TRUE)
 include               (${QT_USE_FILE})
 
 include_directories   (.
-                       $ENV{DEV_ROOT_NCLIENTS}/studio/em_gl
+                       $ENV{DEV_ROOT_NSTUDIO}/em_gl
                        $ENV{NAIAD_PATH}/server/include/Ni
                        $ENV{NAIAD_PATH}/server/include/Ng
                        $ENV{NAIAD_PATH}/server/include/Nb

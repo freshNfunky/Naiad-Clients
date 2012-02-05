@@ -32,9 +32,79 @@
 #    POSSIBILITY OF SUCH DAMAGE.
 #
 
+# Ensure 2.6 (and onward) cmake compatibility
+
+cmake_minimum_required(VERSION 2.6)
+cmake_policy(VERSION 2.6)
+
 # This is the top-level Naiad Studio project
 
 project(NSTUDIO_ROOT)
+
+# Intel compiler flags
+
+if ("$ENV{EM_COMPILER}" STREQUAL "intel")
+
+set (DEBUG_COMP_FLAGS "-ansi-alias -fexceptions -Wall -fPIC -pipe -fno-common -g3 -DDEBUG=1 -DOMP_ENABLED -O0 -diag-disable 981,383,1572,869,1418,193 -gcc-version=430 -gxx-name=g++-4.3 -gcc-name=gcc-4.3")
+set (RELEASE_COMP_FLAGS "-DRELEASE -DNDEBUG -DQT_NO_DEBUG_OUTPUT -DOMP_ENABLED -fexceptions -Wall -fPIC -pipe -fno-common -O3 -fomit-frame-pointer -diag-disable 981,383,1572,869,1418,193 -gcc-version=430 -gxx-name=g++-4.3 -gcc-name=gcc-4.3")
+
+# OpenMP 
+if ("$ENV{OMP_ENABLED}" STREQUAL "YES")
+add_definitions (-DOMP_ENABLED -openmp -parallel)
+endif ("$ENV{OMP_ENABLED}" STREQUAL "YES")
+
+endif ("$ENV{EM_COMPILER}" STREQUAL "intel")
+
+# gcc compiler flags
+
+if ("$ENV{EM_COMPILER}" STREQUAL "gcc")
+
+set (DEBUG_COMP_FLAGS "-fexceptions -Wall -fPIC -pipe -fno-common -g3 -DDEBUG -DOMP_ENABLED -O0")
+set (RELEASE_COMP_FLAGS "-DRELEASE -DNDEBUG -DQT_NO_DEBUG_OUTPUT -DOMP_ENABLED -fexceptions -Wall -fPIC -pipe -fno-common -O3 -fomit-frame-pointer")
+
+# OpenMP 
+if ("$ENV{OMP_ENABLED}" STREQUAL "YES")
+add_definitions(-DOMP_ENABLED -fopenmp)
+endif ("$ENV{OMP_ENABLED}" STREQUAL "YES")
+
+endif ("$ENV{EM_COMPILER}" STREQUAL "gcc")
+
+# MSVC compiler flags
+
+if ("$ENV{EM_COMPILER}" STREQUAL "MSVC")
+
+if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
+set(EM_D "d")
+else(CMAKE_BUILD_TYPE MATCHES "DEBUG")
+set(EM_D "")
+endif(CMAKE_BUILD_TYPE MATCHES "DEBUG")
+
+add_definitions(/wd4820 /wd4626 /MP /EHa)
+set (DEBUG_COMP_FLAGS "/DDEBUG /MDd /Zi /Od")
+set (RELEASE_COMP_FLAGS "/DRELEASE -DQT_NO_DEBUG_OUTPUT /MD /O2")
+set (CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
+endif ("$ENV{EM_COMPILER}" STREQUAL "MSVC")
+
+# LINUX
+
+if (UNIX)
+set (DEBUG_COMP_FLAGS "${DEBUG_COMP_FLAGS} -DLINUX")
+set (RELEASE_COMP_FLAGS "${RELEASE_COMP_FLAGS} -DLINUX")
+endif (UNIX)
+
+# OSX
+
+if ("$ENV{EM_PLAT}" STREQUAL "OSX")
+set (DEBUG_COMP_FLAGS "${DEBUG_COMP_FLAGS} -DOSX")
+set (RELEASE_COMP_FLAGS "${RELEASE_COMP_FLAGS} -DOSX")
+endif ("$ENV{EM_PLAT}" STREQUAL "OSX")
+
+# Set the C/C++ compiler flags
+
+set(CMAKE_C_FLAGS_DEBUG ${DEBUG_COMP_FLAGS})
+set(CMAKE_CXX_FLAGS_DEBUG ${DEBUG_COMP_FLAGS})
+set(CMAKE_C_FLAGS_RELEASE ${RELEASE_COMP_FLAGS})
+set(CMAKE_CXX_FLAGS_RELEASE ${RELEASE_COMP_FLAGS})
 
 # The source directories we are building
 

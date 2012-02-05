@@ -27,11 +27,18 @@ set (QT_USE_QTWEBKIT TRUE)
 include (${QT_USE_FILE})
 
 include_directories (.
-                     $ENV{DEV_ROOT_NCLIENTS}/studio/Ngl
-                     $ENV{DEV_ROOT_NCLIENTS}/studio/em_gl
+                     $ENV{DEV_ROOT_NSTUDIO}/Ngl
+                     $ENV{DEV_ROOT_NSTUDIO}/em_gl
+                     $ENV{NAIAD_PATH}/server/include/Ni
+                     $ENV{NAIAD_PATH}/server/include/Nb
+                     $ENV{NAIAD_PATH}/server/include/Ng
+                     $ENV{NAIAD_PATH}/server/include/em
                      /usr/include/nvidia)
 
-link_directories    (/usr/lib64/nvidia)
+link_directories    ($ENV{NAIAD_PATH}/server/lib
+                     $ENV{NAIAD_PATH}/lib
+                     $ENV{LMX_ROOT}/win64_x64
+                     /usr/lib64/nvidia)
 
 file(GLOB_RECURSE NSTUDIO_HDRS "*.h")
 file(GLOB_RECURSE NSTUDIO_SRCS "*.cc")
@@ -403,7 +410,7 @@ add_executable (nstudio-app
                 ${NSTUDIO_QRC_SRCS})
 
 if ("$ENV{EM_COMPILER}" STREQUAL "intel")
-target_link_libraries (nstudio-app -dynamic Ngl Ni -static-intel ${QT_LIBRARIES} ${OPENGL_LIBRARIES} z)
+target_link_libraries (nstudio-app Ngl Ni -static-intel ${QT_LIBRARIES} ${OPENGL_LIBRARIES} z)
 endif ("$ENV{EM_COMPILER}" STREQUAL "intel")
 
 if ("$ENV{EM_COMPILER}" STREQUAL "gcc")
