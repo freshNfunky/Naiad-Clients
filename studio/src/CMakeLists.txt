@@ -403,7 +403,7 @@ add_executable (nstudio-app
                 ${NSTUDIO_QRC_SRCS})
 
 if ("$ENV{EM_COMPILER}" STREQUAL "intel")
-target_link_libraries (nstudio-app -dynamic Ngl Ni -static-intel ${QT_LIBRARIES} ${OPENGL_LIBRARIES} z)
+target_link_libraries (nstudio-app Ngl Ni -static-intel ${QT_LIBRARIES} ${OPENGL_LIBRARIES} z)
 endif ("$ENV{EM_COMPILER}" STREQUAL "intel")
 
 if ("$ENV{EM_COMPILER}" STREQUAL "gcc")
