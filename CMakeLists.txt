@@ -49,7 +49,7 @@ include_directories (.
 		     $ENV{NAIAD_PATH}/server/include/Nb
 		     $ENV{NAIAD_PATH}/server/include/Ng
 		     $ENV{NAIAD_PATH}/server/include/em
-		     $ENV{NAIAD_PATH}/server/include/system)
+		     $ENV{NAIAD_PATH}/server/include/3rdparty)
 
 link_directories ($ENV{NAIAD_PATH}/server/lib
                   $ENV{NAIAD_PATH}/lib
