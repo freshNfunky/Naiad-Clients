@@ -41,6 +41,13 @@ cmake_policy(VERSION 2.6)
 
 project(NCLIENTS)
 
+# Set the C/C++ compiler flags
+
+set(CMAKE_C_FLAGS_DEBUG "")
+set(CMAKE_CXX_FLAGS_DEBUG "")
+set(CMAKE_C_FLAGS_RELEASE "")
+set(CMAKE_CXX_FLAGS_RELEASE "")
+
 #
 # Standard include & link paths
 #
@@ -58,68 +65,68 @@ link_directories ($ENV{NAIAD_PATH}/server/lib
 # Intel compiler flags
 
 if ("$ENV{EM_COMPILER}" STREQUAL "intel")
-
-set (DEBUG_COMP_FLAGS "-ansi-alias -fexceptions -Wall -fPIC -pipe -fno-common -g3 -DDEBUG=1 -DOMP_ENABLED -O0 -diag-disable 981,383,1572,869,1418,193 -gcc-version=440 -gxx-name=g++-4.4 -gcc-name=gcc-4.4 -inline-level=0")
-
-set (RELEASE_COMP_FLAGS "-DRELEASE -DNDEBUG -DQT_NO_DEBUG_OUTPUT -DOMP_ENABLED -fexceptions -Wall -fPIC -pipe -fno-common -O3 -inline-level=1 -diag-disable 981,383,1572,869,1418,193 -gcc-version=440 -gxx-name=g++-4.4 -gcc-name=gcc-4.4")
-
+add_definitions(-ansi-alias -fexceptions -Wall -fPIC -pipe -fno-common -diag-disable 981,383,1572,869,1418,193 -gcc-version=440 -gxx-name=g++-4.4 -gcc-name=gcc-4.4 -DOMP_ENABLED)
+if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
+add_definitions(-g3 -DDEBUG=1 -O0 -inline-level=0)
+else()
+add_definitions(-DRELEASE -DNDEBUG -DQT_NO_DEBUG_OUTPUT -fast -inline-level=1)
+endif(CMAKE_BUILD_TYPE MATCHES "DEBUG")
 # OpenMP 
 if ("$ENV{OMP_ENABLED}" STREQUAL "YES")
 add_definitions (-DOMP_ENABLED -openmp -parallel)
 endif ("$ENV{OMP_ENABLED}" STREQUAL "YES")
-
 endif ("$ENV{EM_COMPILER}" STREQUAL "intel")
 
 # gcc compiler flags
 
 if ("$ENV{EM_COMPILER}" STREQUAL "gcc")
-
-set (DEBUG_COMP_FLAGS "-fexceptions -Wall -fPIC -pipe -fno-common -g3 -DDEBUG -DOMP_ENABLED -O0")
-set (RELEASE_COMP_FLAGS "-DRELEASE -DNDEBUG -DQT_NO_DEBUG_OUTPUT -DOMP_ENABLED -fexceptions -Wall -fPIC -pipe -fno-common -O3 -fomit-frame-pointer")
-
+add_definitions(-fexceptions -Wall -fPIC -pipe -fno-common -DOMP_ENABLED)
+if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
+add_definitions(-g3 -DDEBUG -O0)
+else()
+add_definitions(-DRELEASE -DNDEBUG -DQT_NO_DEBUG_OUTPUT -O3 -fomit-frame-pointer)
+endif(CMAKE_BUILD_TYPE MATCHES "DEBUG")
 # OpenMP 
 if ("$ENV{OMP_ENABLED}" STREQUAL "YES")
 add_definitions(-DOMP_ENABLED -fopenmp)
 endif ("$ENV{OMP_ENABLED}" STREQUAL "YES")
-
 endif ("$ENV{EM_COMPILER}" STREQUAL "gcc")
 
 # MSVC compiler flags
 
 if ("$ENV{EM_COMPILER}" STREQUAL "MSVC")
-
+add_definitions(/wd4820 /wd4626 /MP /EHa)
 if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
 set(EM_D "d")
-else(CMAKE_BUILD_TYPE MATCHES "DEBUG")
+add_definitions(/DDEBUG /MDd /Zi /Od)
+else()
 set(EM_D "")
+add_definitions(/DRELEASE -DQT_NO_DEBUG_OUTPUT /MD /O2)
 endif(CMAKE_BUILD_TYPE MATCHES "DEBUG")
-
-add_definitions(/wd4820 /wd4626 /MP /EHa)
-set (DEBUG_COMP_FLAGS "/DDEBUG /MDd /Zi /Od")
-set (RELEASE_COMP_FLAGS "/DRELEASE -DQT_NO_DEBUG_OUTPUT /MD /O2")
+if(DIST_BUILD_TYPE)
 set (CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE} /LTCG")
+else()
+set (CMAKE_EXE_LINKER_FLAGS_RELEASE "${CMAKE_EXE_LINKER_FLAGS_RELEASE}")
+endif(DIST_BUILD_TYPE)
 endif ("$ENV{EM_COMPILER}" STREQUAL "MSVC")
 
 # LINUX
 
 if (UNIX)
-set (DEBUG_COMP_FLAGS "${DEBUG_COMP_FLAGS} -DLINUX")
-set (RELEASE_COMP_FLAGS "${RELEASE_COMP_FLAGS} -DLINUX")
+add_definitions(-DLINUX)
+if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
+else()
+endif(CMAKE_BUILD_TYPE MATCHES "DEBUG")
 endif (UNIX)
 
 # OSX
 
 if ("$ENV{EM_PLAT}" STREQUAL "OSX")
-set (DEBUG_COMP_FLAGS "${DEBUG_COMP_FLAGS} -DOSX")
-set (RELEASE_COMP_FLAGS "${RELEASE_COMP_FLAGS} -DOSX")
+add_definitions(-DOSX)
+if(CMAKE_BUILD_TYPE MATCHES "DEBUG")
+else()
+endif(CMAKE_BUILD_TYPE MATCHES "DEBUG")
 endif ("$ENV{EM_PLAT}" STREQUAL "OSX")
-
-# Set the C/C++ compiler flags
-
-set(CMAKE_C_FLAGS_DEBUG ${DEBUG_COMP_FLAGS})
-set(CMAKE_CXX_FLAGS_DEBUG ${DEBUG_COMP_FLAGS})
-set(CMAKE_C_FLAGS_RELEASE ${RELEASE_COMP_FLAGS})
-set(CMAKE_CXX_FLAGS_RELEASE ${RELEASE_COMP_FLAGS})
 
 # The source directories we are building
 

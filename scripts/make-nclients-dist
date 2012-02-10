@@ -1,5 +1,5 @@
 #!/bin/bash
 
 # Build all binaries, libraries and custom nops
-cd $DEV_ROOT_NCMD/stage-$EM_PLAT-$EM_ARCH/release
+cd $DEV_ROOT_NCLIENTS/stage-$EM_PLAT-$EM_ARCH/dist
 make install -j8
