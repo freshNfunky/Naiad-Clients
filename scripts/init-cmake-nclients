@@ -1,27 +1,12 @@
 #!/bin/bash
 
-# in case OMP_ENALBED is NOT defined in your local environment
-if [ -z ${OMP_ENABLED} ]; then
-    echo exporting default OMP_ENABLED = NO
-    export OMP_ENABLED=NO
-fi
-
-if [ -z ${EM_COMPILER} ]; then
-    echo exporting default EM_COMPILER = gcc
-    export EM_COMPILER=gcc
-fi
-
-if [ -z ${CC} ]; then
-    echo exporting default CC = gcc
-    export CC=gcc
-fi
-
-if [ -z ${CXX} ]; then
-    echo exporting default CXX = g++
-    export CXX=g++
-fi
-
 # start the build setup...
+
+echo "NAIAD_PATH:" $NAIAD_PATH
+echo "DEV_ROOT_NCLIENTS:" $DEV_ROOT_NCLIENTS
+echo "EM_ARCH:" $EM_ARCH
+echo "EM_PLAT:" $EM_PLAT
+echo "EM_COMPILER:" $EM_COMPILER
 
 rm -rf $DEV_ROOT_NCLIENTS/stage-$EM_PLAT-$EM_ARCH
 mkdir  $DEV_ROOT_NCLIENTS/stage-$EM_PLAT-$EM_ARCH
@@ -32,12 +17,24 @@ mkdir release
 mkdir dist
 
 cd debug
-cmake -DCMAKE_BUILD_TYPE=DEBUG -DCMAKE_INSTALL_PREFIX=$NAIAD_PATH $DEV_ROOT_NCLIENTS
+if [[ $EM_PLAT == 'WINDOWS' ]]; then
+    cmake -DCMAKE_BUILD_TYPE=DEBUG -DCMAKE_INSTALL_PREFIX=$NAIAD_PATH $DEV_ROOT_NCLIENTS -G "Visual Studio 10 Win64"
+else
+    cmake -DCMAKE_BUILD_TYPE=DEBUG -DCMAKE_INSTALL_PREFIX=$NAIAD_PATH $DEV_ROOT_NCLIENTS
+fi
 
 cd ..
 cd release
-cmake -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=$NAIAD_PATH $DEV_ROOT_NCLIENTS
+if [[ $EM_PLAT == 'WINDOWS' ]]; then
+    cmake -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=$NAIAD_PATH $DEV_ROOT_NCLIENTS -G "Visual Studio 10 Win64"
+else
+    cmake -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=$NAIAD_PATH $DEV_ROOT_NCLIENTS
+fi
 
 cd ..
 cd dist
-cmake -DDIST_BUILD_TYPE=1 -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=$NAIAD_PATH $DEV_ROOT_NCLIENTS
+if [[ $EM_PLAT == 'WINDOWS' ]]; then
+    cmake -DDIST_BUILD_TYPE=1 -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=$NAIAD_PATH $DEV_ROOT_NCLIENTS -G "Visual Studio 10 Win64"
+else 
+    cmake -DDIST_BUILD_TYPE=1 -DCMAKE_BUILD_TYPE=RELEASE -DCMAKE_INSTALL_PREFIX=$NAIAD_PATH $DEV_ROOT_NCLIENTS
+fi
