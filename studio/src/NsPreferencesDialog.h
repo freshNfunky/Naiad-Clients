@@ -71,7 +71,7 @@ public:
     ~NsPreferencesDialog()
     {}
 
-protected slots:
+protected slots:    // Action slots.
 
     void
     onReset()
@@ -92,9 +92,6 @@ private:
 
     void
     _createMenus();
-
-    void
-    _createStatusBar();
 
     QWidget*
     _createGeneralPage();
@@ -133,24 +130,6 @@ private:
 
     void
     _saveAs();
-
-    void
-    _setWindowTitle();
-
-private:
-
-    static QString
-    _getImportFileName(QWidget       *parent,
-                       const QString &caption, 
-                       const QString &path);
-
-    static QString
-    _getExportFileName(QWidget       *parent, 
-                       const QString &caption, 
-                       const QString &path);
-
-    static QString
-    _getBackupFileName(const QString &fileName);
 
 private:    // Member variables.
 

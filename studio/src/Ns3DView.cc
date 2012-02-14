@@ -61,6 +61,7 @@
 #include "Ns3DCameraScope.h"
 #include "Ns3DFieldScope.h"
 
+#include "NsApplication.h"
 #include "NsMainWindow.h"
 #include "NsPreferences.h"
 
@@ -1581,8 +1582,8 @@ Ns3DView::_onReadSettings()
 
     QSettings settings(QSettings::IniFormat,
                        QSettings::UserScope,
-                       "Exotic Matter",
-                       "Naiad Studio");
+                       NsApplication::organizationName(),
+                       NsApplication::applicationName());
 
     settings.beginGroup("Ns3DView");
 
@@ -1612,8 +1613,8 @@ Ns3DView::_onWriteSettings()
 
     QSettings settings(QSettings::IniFormat,
                        QSettings::UserScope,
-                       "Exotic Matter",
-                       "Naiad Studio");
+                       NsApplication::organizationName(),
+                       NsApplication::applicationName());
 
     settings.beginGroup("Ns3DView");
 

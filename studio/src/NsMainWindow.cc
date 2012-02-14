@@ -1610,7 +1610,10 @@ NsMainWindow::_createRecentGraphAction(const QString &graphFileName)
 void
 NsMainWindow::_readSettings()
 {
-    QSettings settings;
+    QSettings settings(QSettings::IniFormat,
+                       QSettings::UserScope,
+                       NsApplication::organizationName(),
+                       NsApplication::applicationName());
     settings.beginGroup(_settingsGroup);
 
     restoreGeometry(settings.value("Geometry").toByteArray());
@@ -1637,7 +1640,10 @@ NsMainWindow::_readSettings()
 void
 NsMainWindow::_readDefaultSettings()
 {
-    QSettings settings;
+    QSettings settings(QSettings::IniFormat,
+                       QSettings::UserScope,
+                       NsApplication::organizationName(),
+                       NsApplication::applicationName());
     settings.beginGroup(_settingsGroup);
     restoreGeometry(settings.value("DefaultGeometry").toByteArray());
     restoreState(settings.value("DefaultState").toByteArray());
@@ -1652,7 +1658,10 @@ NsMainWindow::_readDefaultSettings()
 void
 NsMainWindow::_writeSettings()
 {
-    QSettings settings;
+    QSettings settings(QSettings::IniFormat,
+                       QSettings::UserScope,
+                       NsApplication::organizationName(),
+                       NsApplication::applicationName());
     settings.beginGroup(_settingsGroup);
 
     settings.setValue("Geometry", saveGeometry());
@@ -1678,7 +1687,10 @@ NsMainWindow::_writeSettings()
 void
 NsMainWindow::_writeDefaultSettings()
 {
-    QSettings settings;
+    QSettings settings(QSettings::IniFormat,
+                       QSettings::UserScope,
+                       NsApplication::organizationName(),
+                       NsApplication::applicationName());
     settings.beginGroup(_settingsGroup);
     settings.setValue("DefaultGeometry", saveGeometry());
     settings.setValue("DefaultState", saveState());

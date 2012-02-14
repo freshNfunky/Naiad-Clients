@@ -95,10 +95,8 @@ NsApplication::NsApplication(int &argc, char **argv)
     , _playblastQuality(_defaultPlayblastQuality)
     , _help(false)
 {
-#if 0
-    for(int i=0; i<argc; ++i)
-        std::cerr << argv[i] << std::endl;
-#endif
+    connect(this, SIGNAL(aboutToQuit()), SLOT(onAboutToQuit()));
+
     _parseArgs(QApplication::arguments());
 
     if (!_help) {
@@ -110,11 +108,19 @@ NsApplication::NsApplication(int &argc, char **argv)
                                   QMessageBox::Ok);
         }
 
+        QCoreApplication::setOrganizationName("Exotic Matter");
+        QCoreApplication::setOrganizationDomain("exoticmatter.com");
+        QCoreApplication::setApplicationName("Naiad Studio");
+        QCoreApplication::setApplicationVersion(queryVersion());
+
+        connect(this,                      SIGNAL(aboutToQuit()), 
+                NsPreferences::instance(), SLOT(onAboutToQuit()));
+
+        _readSettings();
+
+
     //    NiSetVerboseLevel(NI_VERBOSE);
 
-        setOrganizationName("Exotic Matter");
-        setApplicationName("Naiad Studio");
-        setApplicationVersion(queryVersion());
         setStyle(new NsProxyStyle); // Application takes ownership.
 
         //_parseArgs(QApplication::arguments());
@@ -216,6 +222,8 @@ NsApplication::NsApplication(int &argc, char **argv)
                 os, SLOT(onEndOp(NtTimeBundle,QString)));
         connect(gc, SIGNAL(reset()),
                 os, SLOT(onReset()));
+
+        // 
     }
 }
 
@@ -239,6 +247,7 @@ NsApplication::~NsApplication()
 
         NsOpStore::destroyInstance();
         NsGraphCallback::destroyInstance();
+        //NsPreferences::destroyInstance();
 
         NiEnd();
     }
@@ -278,6 +287,18 @@ NsApplication::notify(QObject *receiver, QEvent *event)
     return false;
 }
 
+
+// onAboutToQuit
+// -------------
+//! DOCS [slot]
+
+void
+NsApplication::onAboutToQuit()
+{
+    _writeSettings();
+}
+
+// -----------------------------------------------------------------------------
 
 // _parseArgs
 // ----------
@@ -474,12 +495,60 @@ NsApplication::_registerScopes()
 
 // Default playblast settings.
 
-const int NsApplication::_defaultPlayblastWidth = 640;
-const int NsApplication::_defaultPlayblastHeight = 480;
-const QString NsApplication::_defaultPlayblastFormat = QString("jpeg");
-const int NsApplication::_defaultPlayblastQuality = 80;
+const int     NsApplication::_defaultPlayblastWidth   = 640;
+const int     NsApplication::_defaultPlayblastHeight  = 480;
+const QString NsApplication::_defaultPlayblastFormat  = QString("jpeg");
+const int     NsApplication::_defaultPlayblastQuality = 80;
 
 // -----------------------------------------------------------------------------
+
+//! DOCS [static]
+const QString NsApplication::_settingsGroup = QString("Application");
+
+
+//! DOCS
+void
+NsApplication::_readSettings()
+{
+    QSettings settings(QSettings::IniFormat,
+                       QSettings::UserScope,
+                       QCoreApplication::organizationName(),
+                       QCoreApplication::applicationName());
+    settings.beginGroup(_settingsGroup);
+    _playblastWidth = 
+        settings.value(
+            "PlayblastWidth", QVariant(_defaultPlayblastWidth)).toInt();
+    _playblastHeight = 
+        settings.value(
+            "PlayblastHeight", QVariant(_defaultPlayblastHeight)).toInt();
+    _playblastFormat = 
+        settings.value(
+            "PlayblastFormat", QVariant(_defaultPlayblastFormat)).toString();
+    _playblastQuality = 
+        settings.value(
+            "PlayblastQuality", QVariant(_defaultPlayblastQuality)).toInt();
+    settings.endGroup();
+}
+
+
+//! DOCS
+void
+NsApplication::_writeSettings()
+{
+    QSettings settings(QSettings::IniFormat,
+                       QSettings::UserScope,
+                       QCoreApplication::organizationName(),
+                       QCoreApplication::applicationName());
+    settings.beginGroup(_settingsGroup);
+    settings.setValue("PlayblastWidth", QVariant(_playblastWidth));
+    settings.setValue("PlayblastHeight", QVariant(_playblastHeight));
+    settings.setValue("PlayblastFormat", QVariant(_playblastFormat));
+    settings.setValue("PlayblastQuality", QVariant(_playblastQuality));
+    settings.endGroup();
+}
+
+// -----------------------------------------------------------------------------
+
 
 
 //Ns::internalError(const QString &text)

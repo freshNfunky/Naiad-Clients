@@ -40,6 +40,8 @@
 
 #include "NsPreferences.h"
 #include "NsMessageWidget.h"
+#include <QCoreApplication>
+#include <QSettings>
 #include <QFile>
 #include <QStack>
 #include <QIODevice>
@@ -91,8 +93,289 @@ NsPreferences *NsPreferences::_instance = 0;
 
 // -----------------------------------------------------------------------------
 
+const QString NsPreferences::_settingsGroup = QString("Preferences");
+
+void
+NsPreferences::_readSettings()
+{
+    QSettings s(QSettings::IniFormat,
+                QSettings::UserScope,
+                QCoreApplication::organizationName(),
+                QCoreApplication::applicationName());
+    s.beginGroup(_settingsGroup);
+    {
+        s.beginGroup(_GraphView::settingsGroup);
+        {
+            _readColorSetting(s, "Background",
+                              _gv.background,
+               _GraphView::defaultBackground);
+            _readColorSetting(s, "LiveBackground",
+                              _gv.liveBackground,
+               _GraphView::defaultLiveBackground);
+            _readColorSetting(s, "SelectionColor",
+                              _gv.selectionColor,
+               _GraphView::defaultSelectionColor);
+
+            _readColorSetting(s, "FeedLineColor", 
+                              _gv.feedLineColor,
+               _GraphView::defaultFeedLineColor);
+            _readColorSetting(s, "FeedReplacedLineColor", 
+                              _gv.feedReplacedLineColor,
+               _GraphView::defaultFeedReplacedLineColor);
+            _readColorSetting(s, "FeedValidLineColor", 
+                              _gv.feedValidLineColor,
+               _GraphView::defaultFeedValidLineColor);
+            _readColorSetting(s, "FeedInvalidLineColor", 
+                              _gv.feedInvalidLineColor,
+               _GraphView::defaultFeedInvalidLineColor);
+
+            _readColorSetting(s, "PlugLineColor", 
+                              _gv.plugLineColor,
+               _GraphView::defaultPlugLineColor);
+            _readColorSetting(s, "PlugTextColor", 
+                              _gv.plugTextColor,
+               _GraphView::defaultPlugTextColor);
+            _readColorSetting(s, "PlugBackground", 
+                              _gv.plugBackground,
+               _GraphView::defaultPlugBackground);
+
+            _readColorSetting(s, "BodyLineColor",
+                              _gv.bodyLineColor,
+               _GraphView::defaultBodyLineColor);
+            _readColorSetting(s, "BodyTextColor",
+                              _gv.bodyTextColor,
+               _GraphView::defaultBodyTextColor);
+            _readColorSetting(s, "BodyBackground",
+                              _gv.bodyBackground,
+               _GraphView::defaultBodyBackground);
+
+            _readColorSetting(s, "OpLineColor",
+                              _gv.opLineColor,
+               _GraphView::defaultOpLineColor);
+            _readColorSetting(s, "OpTextColor",
+                              _gv.opTextColor,
+               _GraphView::defaultOpTextColor);
+            _readColorSetting(s, "OpBackground",
+                              _gv.opBackground,
+               _GraphView::defaultOpBackground);
+            _readColorSetting(s, "OpDisabledColor",
+                              _gv.opDisabledColor,
+               _GraphView::defaultOpDisabledColor);
+
+            _readColorSetting(s, "OpStateDefaultColor",
+                              _gv.opStateDefaultColor,
+               _GraphView::defaultOpStateDefaultColor);
+            s.beginGroup("OpStateColors");
+            {
+                _readMappedColorSetting(s, _gv.opStateColors, 
+                            _GraphView::defaultOpStateColors());
+            }
+            s.endGroup();   // "OpStateColors"
+
+            _readColorSetting(s, "OpCategoryDefaultColor",
+                              _gv.opCategoryDefaultColor,
+               _GraphView::defaultOpCategoryDefaultColor);
+            s.beginGroup("OpCategoryColors");
+            {
+                _readMappedColorSetting(s, _gv.opCategoryColors, 
+                            _GraphView::defaultOpCategoryColors());
+            }
+            s.endGroup();   // "OpCategoryColors"
+
+            _readColorSetting(s, "SignatureDefaultColor",
+                              _gv.signatureDefaultColor,
+               _GraphView::defaultSignatureDefaultColor);
+            s.beginGroup("SignatureColors");
+            {
+                _readMappedColorSetting(s, _gv.signatureColors, 
+                            _GraphView::defaultSignatureColors());
+            }
+            s.endGroup();   // "SignatureColors"
+        }
+        s.endGroup();   // "GraphView"
+
+        s.beginGroup(_ScopeView::settingsGroup);
+        {
+
+        }
+        s.endGroup();   // "ScopeView"
+
+    }
+    s.endGroup();    // "Preferences"
+}
+
+
+//! DOCS [static]
+void
+NsPreferences::_readColorSetting(const QSettings &s, 
+                                 const QString   &k, 
+                                 QColor          &c,
+                                 const QString   &d)
+{
+    c = QColor(s.value(k, d).toString());
+}
+
+
+//! DOCS [static]
+void
+NsPreferences::_readMappedColorSetting(const QSettings            &s,  
+                                       QMap<QString,QColor>       &m,
+                                       const QMap<QString,QColor> &d)
+{
+    QColor color;
+    foreach (const QString &key, s.allKeys()) {
+        _readColorSetting(s, key, color, 
+            d.value(key, QColor(QColor::Invalid)).name());
+        m.insert(key, color);
+    }
+}
+
+
+//! DOCS 
+void
+NsPreferences::_writeSettings() const
+{
+    QSettings s(QSettings::IniFormat,
+                QSettings::UserScope,
+                QCoreApplication::organizationName(),
+                QCoreApplication::applicationName());
+    s.beginGroup(_settingsGroup);
+    {
+        s.beginGroup(_GraphView::settingsGroup);
+        {
+            _writeColorSetting(s, "Background", 
+                               _gv.background);
+            _writeColorSetting(s, "LiveBackground", 
+                               _gv.liveBackground);
+            _writeColorSetting(s, "SelectionColor", 
+                               _gv.selectionColor);
+
+            _writeColorSetting(s, "FeedLineColor", 
+                               _gv.feedLineColor);
+            _writeColorSetting(s, "FeedReplacedLineColor", 
+                               _gv.feedReplacedLineColor);
+            _writeColorSetting(s, "FeedValidLineColor", 
+                               _gv.feedValidLineColor);
+            _writeColorSetting(s, "FeedInvalidLineColor", 
+                               _gv.feedInvalidLineColor);
+
+            _writeColorSetting(s, "PlugLineColor",
+                               _gv.plugLineColor);
+            _writeColorSetting(s, "PlugTextColor",
+                               _gv.plugTextColor);
+            _writeColorSetting(s, "PlugBackground",
+                               _gv.plugBackground);
+
+            _writeColorSetting(s, "BodyLineColor",
+                               _gv.bodyLineColor);
+            _writeColorSetting(s, "BodyTextColor",
+                               _gv.bodyTextColor);
+            _writeColorSetting(s, "BodyBackground",
+                               _gv.bodyBackground);
+
+            _writeColorSetting(s, "OpLineColor",
+                               _gv.opLineColor);
+            _writeColorSetting(s, "OpTextColor",
+                               _gv.opTextColor);
+            _writeColorSetting(s, "OpBackground",
+                               _gv.opBackground);
+            _writeColorSetting(s, "OpDisabledColor",
+                               _gv.opDisabledColor);
+            _writeColorSetting(s, "OpStateDefaultColor",
+                               _gv.opStateDefaultColor);
+            s.beginGroup("OpStateColors");
+                _writeMappedColorSetting(s, _gv.opStateColors);
+            s.endGroup();   // "OpStateColors"
+
+            _writeColorSetting(s, "OpCategoryDefaultColor",
+                               _gv.opCategoryDefaultColor);
+            s.beginGroup("OpCategoryColors");
+                _writeMappedColorSetting(s, _gv.opCategoryColors);
+            s.endGroup();   // "OpCategoryColors"
+
+            _writeColorSetting(s, "SignatureDefaultColor",
+                               _gv.signatureDefaultColor);
+            s.beginGroup("SignatureColors");
+                _writeMappedColorSetting(s, _gv.signatureColors);
+            s.endGroup();   // "SignatureColors"
+        }
+        s.endGroup();   // "GraphView.
+
+        s.beginGroup(_ScopeView::settingsGroup);
+        {
+            s.setValue("Background", 
+                       _sv.background.name());
+            s.setValue("SelectionColor", 
+                       _sv.selectionColor.name());
+            s.setValue("ConstructionGridColor", 
+                       _sv.constructionGridColor.name());
+
+            s.setValue("AxisLineColor", 
+                       _sv.axisLineColor.name());
+            s.setValue("AxisTextColor", 
+                       _sv.axisTextColor.name());
+            s.setValue("BoxLineColor", 
+                       _sv.boxLineColor.name());
+            s.setValue("BoxTextColor", 
+                       _sv.boxTextColor.name());
+            s.setValue("ClipBoxLineColor", 
+                       _sv.clipBoxLineColor.name());
+            s.setValue("ClipBoxTextColor", 
+                       _sv.clipBoxTextColor.name());
+            s.setValue("FrustumLineColor", 
+                       _sv.frustumLineColor.name());
+            s.setValue("FrustumTextColor", 
+                       _sv.frustumTextColor.name());
+            s.setValue("ImportTransformLineColor", 
+                       _sv.importTransformLineColor.name());
+            s.setValue("ImportTransformTextColor", 
+                       _sv.importTransformTextColor.name());
+            s.setValue("PlaneLineColor", 
+                       _sv.planeLineColor.name());
+            s.setValue("PlaneTextColor", 
+                       _sv.planeTextColor.name());
+            s.setValue("SphereLineColor", 
+                       _sv.sphereLineColor.name());
+            s.setValue("SphereTextColor", 
+                       _sv.sphereTextColor.name());
+
+            s.setValue("HudTextColor", 
+                       _sv.hudTextColor.name());
+            s.setValue("BodyLabelTextColor", 
+                       _sv.bodyLabelTextColor.name());
+        }
+        s.endGroup();   // "ScopeView"
+    }
+    s.endGroup();   // "Preferences"
+}
+
+
+//! DOCS [static]
+void
+NsPreferences::_writeColorSetting(QSettings     &s, 
+                                  const QString &k, 
+                                  const QColor  &c)
+{
+    s.setValue(k, c.name()); 
+}
+
+
+//! DOCS [static]
+void
+NsPreferences::_writeMappedColorSetting(QSettings                  &s, 
+                                        const QMap<QString,QColor> &map)
+{
+    QMap<QString,QColor>::const_iterator iter = map.constBegin();
+    const QMap<QString,QColor>::const_iterator iend = map.constEnd();
+    for (; iter != iend; ++iter) {
+        _writeColorSetting(s, iter.key(), iter.value());
+    }
+}
+
+// -----------------------------------------------------------------------------
+
 bool
-NsPreferences::read(QIODevice *device)
+NsPreferences::readXml(QIODevice *device)
 {
     QXmlStreamReader xml(device);
     while (!xml.atEnd() && !xml.hasError()) {
@@ -108,13 +391,13 @@ NsPreferences::read(QIODevice *device)
                 continue;
             }
             else if ("general" == name) {
-                _readGeneral(xml);
+                _readXmlGeneral(xml);
             }
             else if ("graph-view" == name) {
-                _readGraphView(xml);
+                _readXmlGraphView(xml);
             }
             else if ("scope-view" == name) {
-                _readScopeView(xml);
+                _readXmlScopeView(xml);
             }
         }
     }
@@ -135,7 +418,7 @@ NsPreferences::read(QIODevice *device)
 
 
 void 
-NsPreferences::write(QIODevice *device) const
+NsPreferences::writeXml(QIODevice *device) const
 {
     QXmlStreamWriter xml(device);
     xml.setCodec("utf-8");
@@ -144,86 +427,70 @@ NsPreferences::write(QIODevice *device) const
     xml.writeStartElement("nstudio");
 
     xml.writeStartElement("general");
-    _writePathElement(xml, "style", _generalStylePath);
+    _writeXmlPathElement(xml, "style", _gen.stylePath);
     xml.writeEndElement();  // general.
 
     xml.writeStartElement("graph-view");
-    _writeColorElement(xml, "background", _graphViewBackground);
-    _writeColorElement(xml, "background-live", _graphViewLiveBackground);
-    _writeColorElement(xml, "selection-color", _graphViewSelectionColor);
+    _writeXmlColorElement(xml, "background", _gv.background);
+    _writeXmlColorElement(xml, "background-live", _gv.liveBackground);
+    _writeXmlColorElement(xml, "selection-color", _gv.selectionColor);
 
-    _writeColorElement(xml, "feed-line", _graphViewFeedLineColor);
-    _writeColorElement(xml, "feed-replaced-line", _graphViewFeedReplacedLineColor);
-    _writeColorElement(xml, "feed-valid-line", _graphViewFeedValidLineColor);
-    _writeColorElement(xml, "feed-invalid-line", _graphViewFeedInvalidLineColor);
+    _writeXmlColorElement(xml, "feed-line", _gv.feedLineColor);
+    _writeXmlColorElement(xml, "feed-replaced-line", _gv.feedReplacedLineColor);
+    _writeXmlColorElement(xml, "feed-valid-line", _gv.feedValidLineColor);
+    _writeXmlColorElement(xml, "feed-invalid-line", _gv.feedInvalidLineColor);
     
-    _writeColorElement(xml, "plug-line", _graphViewPlugLineColor);
-    _writeColorElement(xml, "plug-text", _graphViewPlugTextColor);
-    _writeColorElement(xml, "plug-background", _graphViewPlugBackground);
+    _writeXmlColorElement(xml, "plug-line", _gv.plugLineColor);
+    _writeXmlColorElement(xml, "plug-text", _gv.plugTextColor);
+    _writeXmlColorElement(xml, "plug-background", _gv.plugBackground);
 
-    _writeColorElement(xml, "body-line", _graphViewBodyLineColor);
-    _writeColorElement(xml, "body-text", _graphViewBodyTextColor);
-    _writeColorElement(xml, "body-background", _graphViewBodyBackground);
+    _writeXmlColorElement(xml, "body-line", _gv.bodyLineColor);
+    _writeXmlColorElement(xml, "body-text", _gv.bodyTextColor);
+    _writeXmlColorElement(xml, "body-background", _gv.bodyBackground);
 
-    _writeColorElement(xml, "op-line", _graphViewOpLineColor);
-    _writeColorElement(xml, "op-text", _graphViewOpTextColor);
-    _writeColorElement(xml, "op-background", _graphViewOpBackground);
-    _writeColorElement(xml, "op-disabled", _graphViewOpDisabledColor);
-    _writeMappedColorElement(xml, "op-state", _graphViewOpStateColors);
-    _writeColorElement(xml, "op-state-default", _graphViewOpStateDefaultColor);
-    _writeMappedColorElement(xml, "op-category", _graphViewOpCategoryColors);
-    _writeColorElement(xml, "op-category-default", _graphViewOpCategoryDefaultColor);
+    _writeXmlColorElement(xml, "op-line", _gv.opLineColor);
+    _writeXmlColorElement(xml, "op-text", _gv.opTextColor);
+    _writeXmlColorElement(xml, "op-background", _gv.opBackground);
+    _writeXmlColorElement(xml, "op-disabled", _gv.opDisabledColor);
+    _writeXmlMappedColorElement(xml, "op-state", _gv.opStateColors);
+    _writeXmlColorElement(xml, "op-state-default", _gv.opStateDefaultColor);
+    _writeXmlMappedColorElement(xml, "op-category", _gv.opCategoryColors);
+    _writeXmlColorElement(xml, "op-category-default", _gv.opCategoryDefaultColor);
 
-    _writeMappedColorElement(xml, "signature", _graphViewSignatureColors);
-    _writeColorElement(xml, "signature-default", _graphViewSignatureDefaultColor);
+    _writeXmlMappedColorElement(xml, "signature", _gv.signatureColors);
+    _writeXmlColorElement(xml, "signature-default", _gv.signatureDefaultColor);
     xml.writeEndElement(); // graph-view
 
     xml.writeStartElement("scope-view");
-    _writeColorElement(xml, "background", _scopeViewBackground);
-    _writeColorElement(xml, "selection-color", _scopeViewSelectionColor);
-    _writeColorElement(xml, "construction-grid", _scopeViewConstructionGridColor);
+    _writeXmlColorElement(xml, "background", _sv.background);
+    _writeXmlColorElement(xml, "selection-color", _sv.selectionColor);
+    _writeXmlColorElement(xml, "construction-grid", _sv.constructionGridColor);
 
-    _writeColorElement(xml, "axis-line", _scopeViewAxisLineColor);
-    _writeColorElement(xml, "axis-text", _scopeViewAxisTextColor);
-    _writeColorElement(xml, "box-line", _scopeViewBoxLineColor);
-    _writeColorElement(xml, "box-text", _scopeViewBoxTextColor);
-    _writeColorElement(xml, "clip-box-line", _scopeViewClipBoxLineColor);
-    _writeColorElement(xml, "clip-box-text", _scopeViewClipBoxTextColor);
-    _writeColorElement(xml, "frustum-line", _scopeViewFrustumLineColor);
-    _writeColorElement(xml, "frustum-text", _scopeViewFrustumTextColor);
-    _writeColorElement(xml, "import-transform-line", _scopeViewFrustumLineColor);
-    _writeColorElement(xml, "import-transform-text", _scopeViewFrustumTextColor);
-    _writeColorElement(xml, "plane-line", _scopeViewPlaneLineColor);
-    _writeColorElement(xml, "plane-text", _scopeViewPlaneTextColor);
-    _writeColorElement(xml, "sphere-line", _scopeViewSphereLineColor);
-    _writeColorElement(xml, "sphere-text", _scopeViewSphereTextColor);
+    _writeXmlColorElement(xml, "axis-line", _sv.axisLineColor);
+    _writeXmlColorElement(xml, "axis-text", _sv.axisTextColor);
+    _writeXmlColorElement(xml, "box-line", _sv.boxLineColor);
+    _writeXmlColorElement(xml, "box-text", _sv.boxTextColor);
+    _writeXmlColorElement(xml, "clip-box-line", _sv.clipBoxLineColor);
+    _writeXmlColorElement(xml, "clip-box-text", _sv.clipBoxTextColor);
+    _writeXmlColorElement(xml, "frustum-line", _sv.frustumLineColor);
+    _writeXmlColorElement(xml, "frustum-text", _sv.frustumTextColor);
+    _writeXmlColorElement(xml, "import-transform-line", _sv.frustumLineColor);
+    _writeXmlColorElement(xml, "import-transform-text", _sv.frustumTextColor);
+    _writeXmlColorElement(xml, "plane-line", _sv.planeLineColor);
+    _writeXmlColorElement(xml, "plane-text", _sv.planeTextColor);
+    _writeXmlColorElement(xml, "sphere-line", _sv.sphereLineColor);
+    _writeXmlColorElement(xml, "sphere-text", _sv.sphereTextColor);
 
-    _writeColorElement(xml, "hud-text", _scopeViewHudTextColor);
-    _writeColorElement(xml, "body-label-text", _scopeViewBodyLabelTextColor);
+    _writeXmlColorElement(xml, "hud-text", _sv.hudTextColor);
+    _writeXmlColorElement(xml, "body-label-text", _sv.bodyLabelTextColor);
     xml.writeEndElement(); // scope-view
     xml.writeEndElement(); // nstudio
     xml.writeEndDocument();
 }
 
 
-void
-NsPreferences::reset()
-{
-    _graphViewOpCategoryColors.clear();
-    _graphViewOpStateColors.clear();
-    _graphViewSignatureColors.clear();
-
-    QFile file(":/styles/default-pref.xml");
-    if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-        read(&file);
-        file.close();
-    }
-}
-
-// -----------------------------------------------------------------------------
-
 bool
-NsPreferences::_readGeneral(QXmlStreamReader &xml)
+NsPreferences::_readXmlGeneral(QXmlStreamReader &xml)
 {
     // Check that we are in the right element.
 
@@ -239,8 +506,8 @@ NsPreferences::_readGeneral(QXmlStreamReader &xml)
              xml.name() == "general")) {
         if (xml.tokenType() == QXmlStreamReader::StartElement) {
             if ("style" == xml.name()) {
-                _generalStylePath = 
-                    _parseStringAttribute(xml.attributes(), "path");
+                _gen.stylePath = 
+                    _parseXmlStringAttribute(xml.attributes(), "path");
             }
         }
         xml.readNext();
@@ -249,7 +516,7 @@ NsPreferences::_readGeneral(QXmlStreamReader &xml)
 }
 
 bool
-NsPreferences::_readGraphView(QXmlStreamReader &xml)
+NsPreferences::_readXmlGraphView(QXmlStreamReader &xml)
 {
     // Check that we are in the right element.
 
@@ -265,99 +532,99 @@ NsPreferences::_readGraphView(QXmlStreamReader &xml)
              xml.name() == "graph-view")) {
         if (xml.tokenType() == QXmlStreamReader::StartElement) {
             if ("background" == xml.name()) {
-                _graphViewBackground = 
-                    _parseColorAttributes(xml.attributes());
+                _gv.background = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("background-live" == xml.name()) {
-                _graphViewLiveBackground = 
-                    _parseColorAttributes(xml.attributes());
+                _gv.liveBackground = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("selection-color" == xml.name()) {
-                _graphViewSelectionColor = 
-                    _parseColorAttributes(xml.attributes());                                            
+                _gv.selectionColor = 
+                    _parseXmlColorAttributes(xml.attributes());                                            
             }
             else if ("feed-line" == xml.name()) {
-                _graphViewFeedLineColor = 
-                    _parseColorAttributes(xml.attributes());                                            
+                _gv.feedLineColor = 
+                    _parseXmlColorAttributes(xml.attributes());                                            
             }
             else if ("feed-replaced-line" == xml.name()) {
-                _graphViewFeedReplacedLineColor = 
-                    _parseColorAttributes(xml.attributes());                                            
+                _gv.feedReplacedLineColor = 
+                    _parseXmlColorAttributes(xml.attributes());                                            
             }
             else if ("feed-valid-line" == xml.name()) {
-                _graphViewFeedValidLineColor = 
-                    _parseColorAttributes(xml.attributes());                                            
+                _gv.feedValidLineColor = 
+                    _parseXmlColorAttributes(xml.attributes());                                            
             }
             else if ("feed-invalid-line" == xml.name()) {
-                _graphViewFeedInvalidLineColor = 
-                    _parseColorAttributes(xml.attributes());                                            
+                _gv.feedInvalidLineColor = 
+                    _parseXmlColorAttributes(xml.attributes());                                            
             }
             else if ("plug-line" == xml.name()) {
-                _graphViewPlugLineColor = 
-                    _parseColorAttributes(xml.attributes());                                            
+                _gv.plugLineColor = 
+                    _parseXmlColorAttributes(xml.attributes());                                            
             }
             else if ("plug-text" == xml.name()) {
-                _graphViewPlugTextColor = 
-                    _parseColorAttributes(xml.attributes());                                            
+                _gv.plugTextColor = 
+                    _parseXmlColorAttributes(xml.attributes());                                            
             }
             else if ("plug-background" == xml.name()) {
-                _graphViewPlugBackground = 
-                    _parseColorAttributes(xml.attributes());                                            
+                _gv.plugBackground = 
+                    _parseXmlColorAttributes(xml.attributes());                                            
             }
             else if ("body-line" == xml.name()) {
-                _graphViewBodyLineColor = 
-                    _parseColorAttributes(xml.attributes());                                            
+                _gv.bodyLineColor = 
+                    _parseXmlColorAttributes(xml.attributes());                                            
             }
             else if ("body-text" == xml.name()) {
-                _graphViewBodyTextColor = 
-                    _parseColorAttributes(xml.attributes());                                            
+                _gv.bodyTextColor = 
+                    _parseXmlColorAttributes(xml.attributes());                                            
             }
             else if ("body-background" == xml.name()) {
-                _graphViewBodyBackground = 
-                    _parseColorAttributes(xml.attributes());                                            
+                _gv.bodyBackground = 
+                    _parseXmlColorAttributes(xml.attributes());                                            
             }
             else if ("op-line" == xml.name()) {
-                _graphViewOpLineColor = 
-                    _parseColorAttributes(xml.attributes());                                            
+                _gv.opLineColor = 
+                    _parseXmlColorAttributes(xml.attributes());                                            
             }
             else if ("op-text" == xml.name()) {
-                _graphViewOpTextColor = 
-                    _parseColorAttributes(xml.attributes());                                            
+                _gv.opTextColor = 
+                    _parseXmlColorAttributes(xml.attributes());                                            
             }
             else if ("op-background" == xml.name()) {
-                _graphViewOpBackground = 
-                    _parseColorAttributes(xml.attributes());                                            
+                _gv.opBackground = 
+                    _parseXmlColorAttributes(xml.attributes());                                            
             }
             else if ("op-disabled" == xml.name()) {
-                _graphViewOpDisabledColor = 
-                    _parseColorAttributes(xml.attributes());                                            
+                _gv.opDisabledColor = 
+                    _parseXmlColorAttributes(xml.attributes());                                            
             }
             else if ("op-state" == xml.name()) {
                 const QXmlStreamAttributes attr = xml.attributes();
-                _graphViewOpStateColors[_parseStringAttribute(attr,"name")]=
-                    _parseColorAttributes(attr);
+                _gv.opStateColors[_parseXmlStringAttribute(attr,"name")] =
+                    _parseXmlColorAttributes(attr);
             }
             else if ("op-state-default" == xml.name()) {
-                _graphViewOpStateDefaultColor = 
-                    _parseColorAttributes(xml.attributes());
+                _gv.opStateDefaultColor = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("op-category" == xml.name()) {
                 const QXmlStreamAttributes attr = xml.attributes();
-                _graphViewOpCategoryColors[_parseStringAttribute(attr,"name")]=
-                    _parseColorAttributes(attr);
+                _gv.opCategoryColors[_parseXmlStringAttribute(attr,"name")] =
+                    _parseXmlColorAttributes(attr);
             }
             else if ("op-category-default" == xml.name()) {
-                _graphViewOpCategoryDefaultColor = 
-                    _parseColorAttributes(xml.attributes());
+                _gv.opCategoryDefaultColor = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("signature" == xml.name()) {
                 const QXmlStreamAttributes attr = xml.attributes();
-                _graphViewSignatureColors[_parseStringAttribute(attr,"name")] =
-                    _parseColorAttributes(attr);
+                _gv.signatureColors[_parseXmlStringAttribute(attr,"name")] =
+                    _parseXmlColorAttributes(attr);
             }
             else if ("signature-default" == xml.name()) {
-                _graphViewSignatureDefaultColor = 
-                    _parseColorAttributes(xml.attributes());
+                _gv.signatureDefaultColor = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
         }
         xml.readNext();
@@ -367,7 +634,7 @@ NsPreferences::_readGraphView(QXmlStreamReader &xml)
 
 
 bool
-NsPreferences::_readScopeView(QXmlStreamReader &xml)
+NsPreferences::_readXmlScopeView(QXmlStreamReader &xml)
 {
     // Check that we are in the right element.
 
@@ -383,80 +650,80 @@ NsPreferences::_readScopeView(QXmlStreamReader &xml)
             xml.name() == "scope-view")) {
         if (xml.tokenType() == QXmlStreamReader::StartElement) {
             if ("background" == xml.name()) {
-                _scopeViewBackground = 
-                    _parseColorAttributes(xml.attributes());
+                _sv.background = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("selection-color" == xml.name()) {
-                _scopeViewSelectionColor = 
-                    _parseColorAttributes(xml.attributes());
+                _sv.selectionColor = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("construction-grid" == xml.name()) {
-                _scopeViewConstructionGridColor =
-                    _parseColorAttributes(xml.attributes());
+                _sv.constructionGridColor =
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("axis-line" == xml.name()) {
-                _scopeViewAxisLineColor = 
-                    _parseColorAttributes(xml.attributes());
+                _sv.axisLineColor = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("axis-text" == xml.name()) {
-                _scopeViewAxisTextColor = 
-                    _parseColorAttributes(xml.attributes());
+                _sv.axisTextColor = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("box-line" == xml.name()) {
-                _scopeViewBoxLineColor = 
-                    _parseColorAttributes(xml.attributes());
+                _sv.boxLineColor = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("box-text" == xml.name()) {
-                _scopeViewBoxTextColor = 
-                    _parseColorAttributes(xml.attributes());
+                _sv.boxTextColor = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("clip-box-line" == xml.name()) {
-                _scopeViewClipBoxLineColor = 
-                    _parseColorAttributes(xml.attributes());
+                _sv.clipBoxLineColor = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("clip-box-text" == xml.name()) {
-                _scopeViewClipBoxTextColor = 
-                    _parseColorAttributes(xml.attributes());
+                _sv.clipBoxTextColor = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("frustum-line" == xml.name()) {
-                _scopeViewFrustumLineColor = 
-                    _parseColorAttributes(xml.attributes());
+                _sv.frustumLineColor = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("frustum-text" == xml.name()) {
-                _scopeViewFrustumTextColor = 
-                    _parseColorAttributes(xml.attributes());
+                _sv.frustumTextColor = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("import-transform-line" == xml.name()) {
-                _scopeViewImportTransformLineColor =
-                    _parseColorAttributes(xml.attributes());
+                _sv.importTransformLineColor =
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("import-transform-text" == xml.name()) {
-                _scopeViewImportTransformTextColor =
-                    _parseColorAttributes(xml.attributes());
+                _sv.importTransformTextColor =
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("plane-line" == xml.name()) {
-                _scopeViewPlaneLineColor = 
-                    _parseColorAttributes(xml.attributes());
+                _sv.planeLineColor = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("plane-text" == xml.name()) {
-                _scopeViewPlaneTextColor = 
-                    _parseColorAttributes(xml.attributes());
+                _sv.planeTextColor = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("sphere-line" == xml.name()) {
-                _scopeViewSphereLineColor = 
-                    _parseColorAttributes(xml.attributes());
+                _sv.sphereLineColor = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("sphere-text" == xml.name()) {
-                _scopeViewSphereTextColor = 
-                    _parseColorAttributes(xml.attributes());
+                _sv.sphereTextColor = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("hud-text" == xml.name()) {
-                _scopeViewHudTextColor = 
-                    _parseColorAttributes(xml.attributes());
+                _sv.hudTextColor = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
             else if ("body-label-text" == xml.name()) {
-                _scopeViewBodyLabelTextColor = 
-                    _parseColorAttributes(xml.attributes());
+                _sv.bodyLabelTextColor = 
+                    _parseXmlColorAttributes(xml.attributes());
             }
         }
         xml.readNext();
@@ -466,7 +733,7 @@ NsPreferences::_readScopeView(QXmlStreamReader &xml)
 
 
 QColor
-NsPreferences::_parseColorAttributes(const QXmlStreamAttributes &attr)
+NsPreferences::_parseXmlColorAttributes(const QXmlStreamAttributes &attr)
 {
     QColor color(QColor::Invalid);
     if (attr.hasAttribute("r") && 
@@ -486,8 +753,8 @@ NsPreferences::_parseColorAttributes(const QXmlStreamAttributes &attr)
 }
 
 QString
-NsPreferences::_parseStringAttribute(const QXmlStreamAttributes &attr,
-                                     const QString              &qualifiedName)
+NsPreferences::_parseXmlStringAttribute(const QXmlStreamAttributes &attr,
+                                        const QString            &qualifiedName)
 {
     QString str;
     if (attr.hasAttribute(qualifiedName)) {
@@ -497,9 +764,9 @@ NsPreferences::_parseStringAttribute(const QXmlStreamAttributes &attr,
 }
 
 void
-NsPreferences::_writeColorElement(QXmlStreamWriter &xml, 
-                                  const QString    &qualifiedName, 
-                                  const QColor     &color)
+NsPreferences::_writeXmlColorElement(QXmlStreamWriter &xml, 
+                                     const QString    &qualifiedName, 
+                                     const QColor     &color)
 {
     xml.writeStartElement(qualifiedName);
     xml.writeAttribute("r", QString::number(color.red()));
@@ -509,12 +776,12 @@ NsPreferences::_writeColorElement(QXmlStreamWriter &xml,
 }
 
 void
-NsPreferences::_writeMappedColorElement(QXmlStreamWriter           &xml, 
-                                        const QString            &qualifiedName, 
-                                        const QMap<QString,QColor> &colors)
+NsPreferences::_writeXmlMappedColorElement(QXmlStreamWriter &xml, 
+                                           const QString    &qualifiedName, 
+                                           const _ColorMap  &colors)
 {
-    const QMap<QString,QColor>::ConstIterator iend = colors.constEnd();
-    QMap<QString,QColor>::ConstIterator iter = colors.constBegin();
+    _ColorMap::ConstIterator iter = colors.constBegin();
+    const _ColorMap::ConstIterator iend = colors.constEnd();
     for (; iter != iend; ++iter) {
         xml.writeStartElement(qualifiedName);
         xml.writeAttribute("name", iter.key());
@@ -526,9 +793,9 @@ NsPreferences::_writeMappedColorElement(QXmlStreamWriter           &xml,
 }
 
 void
-NsPreferences::_writePathElement(QXmlStreamWriter &xml, 
-                                 const QString    &qualifiedName, 
-                                 const QString    &path)
+NsPreferences::_writeXmlPathElement(QXmlStreamWriter &xml, 
+                                    const QString    &qualifiedName, 
+                                    const QString    &path)
 {
     xml.writeStartElement(qualifiedName);
     xml.writeAttribute("path", path);
@@ -537,12 +804,237 @@ NsPreferences::_writePathElement(QXmlStreamWriter &xml,
 
 // -----------------------------------------------------------------------------
 
-// NsPreferences
-// -------------
-//! CTOR.
+const QString
+NsPreferences::_General::settingsGroup("General");
 
-NsPreferences::NsPreferences(QObject *parent)
-    : QObject(parent)
+const QString
+NsPreferences::_General::defaultStylePath("/clients/config/nstudio-pro.qss");
+
+// -----------------------------------------------------------------------------
+
+const QString 
+NsPreferences::_GraphView::settingsGroup("GraphView");
+
+
+const QString 
+NsPreferences::_GraphView::defaultBackground = 
+    QColor(72, 72, 72).name();
+
+const QString 
+NsPreferences::_GraphView::defaultLiveBackground = 
+    QColor(226, 255, 226).name();
+
+const QString
+NsPreferences::_GraphView::defaultSelectionColor = 
+    QColor(249, 255, 61).name();
+
+
+const QString 
+NsPreferences::_GraphView::defaultFeedLineColor = 
+    QColor(0, 0, 0).name();
+
+const QString 
+NsPreferences::_GraphView::defaultFeedReplacedLineColor = 
+    QColor(160, 160, 160).name();
+
+const QString
+NsPreferences::_GraphView::defaultFeedValidLineColor = 
+    QColor(50, 205, 50).name();
+
+const QString
+NsPreferences::_GraphView::defaultFeedInvalidLineColor =
+    QColor(255, 99, 71).name();
+
+
+const QString 
+NsPreferences::_GraphView::defaultPlugLineColor = 
+    QColor(0, 0, 0).name();
+
+const QString 
+NsPreferences::_GraphView::defaultPlugTextColor = 
+    QColor(0, 0, 0).name();
+
+const QString
+NsPreferences::_GraphView::defaultPlugBackground = 
+    QColor(255, 255, 255).name();
+
+
+const QString 
+NsPreferences::_GraphView::defaultBodyLineColor = 
+    QColor(0, 0, 0).name();
+
+const QString 
+NsPreferences::_GraphView::defaultBodyTextColor = 
+    QColor(0, 0, 0).name();
+
+const QString
+NsPreferences::_GraphView::defaultBodyBackground = 
+    QColor(255, 255, 255).name();
+
+
+const QString 
+NsPreferences::_GraphView::defaultOpLineColor = 
+    QColor(0, 0, 0).name();
+
+const QString 
+NsPreferences::_GraphView::defaultOpTextColor = 
+    QColor(0, 0, 0).name();
+
+const QString 
+NsPreferences::_GraphView::defaultOpBackground = 
+    QColor(255, 255, 255).name();
+
+const QString 
+NsPreferences::_GraphView::defaultOpDisabledColor =
+    QColor(160, 160, 164).name();
+
+
+const QString 
+NsPreferences::_GraphView::defaultOpStateDefaultColor = 
+    QColor(0, 0, 0).name();
+
+const QString 
+NsPreferences::_GraphView::defaultOpCategoryDefaultColor = 
+    QColor(255, 255, 255).name();
+
+const QString
+NsPreferences::_GraphView::defaultSignatureDefaultColor =
+    QColor(0, 0, 0).name();
+
+
+NsPreferences::_ColorMap
+NsPreferences::_GraphView::defaultOpStateColors()
 {
-    reset();    // Set default values.
+    _ColorMap m;
+    m.insert("ACTIVE", QColor(7, 176, 0));
+    m.insert("INACTIVE", QColor(160, 160, 160));
+    m.insert("SUB_ACTIVE", QColor(205, 250, 157));
+    return m;
 }
+
+NsPreferences::_ColorMap
+NsPreferences::_GraphView::defaultOpCategoryColors()
+{
+    _ColorMap m;
+    m.insert("Body", QColor(244, 201, 203));
+    m.insert("Channel", QColor(207, 244, 234));
+    m.insert("Convert", QColor(244, 201, 203));
+    m.insert("Distance", QColor(210, 230, 255));
+    m.insert("Dynamics", QColor(255, 222, 175));
+    m.insert("Emit", QColor(225, 207, 229));
+    m.insert("Field", QColor(210, 230, 255));
+    m.insert("File", QColor(226, 213, 182));
+    m.insert("Global", QColor(255, 255, 255));
+    m.insert("Math", QColor(210, 230, 255));
+    m.insert("Mesh", QColor(227, 255, 216));
+    m.insert("Origin", QColor(255, 255, 217));
+    m.insert("Particle", QColor(239, 255, 186));
+    m.insert("Point", QColor(227, 255, 216));
+    m.insert("Primitive", QColor(255, 255, 217));
+    return m;
+}
+
+NsPreferences::_ColorMap
+NsPreferences::_GraphView::defaultSignatureColors()
+{
+    _ColorMap m;
+    m.insert("Body", QColor(195, 193, 153));
+    m.insert("Camera", QColor(96, 199, 232));
+    m.insert("Field", QColor(133, 217, 107));
+    m.insert("Field-Gas", QColor(195, 193, 153));
+    m.insert("Field-Liquid", QColor(96, 199, 232));
+    m.insert("Field-Smoke", QColor(179, 17, 17));
+    m.insert("FieldOp", QColor(133, 217, 107));
+    m.insert("Mesh", QColor(195, 193, 153));
+    m.insert("Particle", QColor(195, 193, 153));
+    m.insert("Particle-Liquid", QColor(96, 199, 232));
+    m.insert("Particle-Smoke", QColor(179, 17, 17));
+    m.insert("Volume", QColor(133, 217, 107));
+    return m;
+}
+
+// -----------------------------------------------------------------------------
+
+const QString 
+NsPreferences::_ScopeView::settingsGroup("ScopeView");
+
+
+const QString 
+NsPreferences::_ScopeView::defaultBackground = 
+    QColor(176, 181, 184).name();
+
+const QString
+NsPreferences::_ScopeView::defaultSelectionColor = 
+    QColor(249, 255, 61).name();
+
+const QString
+NsPreferences::_ScopeView::defaultConstructionGridColor = 
+    QColor(127, 127, 127).name();
+
+
+const QString
+NsPreferences::_ScopeView::defaultAxisLineColor = 
+    QColor(255, 255, 255).name();
+
+const QString
+NsPreferences::_ScopeView::defaultAxisTextColor = 
+    QColor(0, 0, 0).name();
+
+const QString
+NsPreferences::_ScopeView::defaultBoxLineColor = 
+    QColor(255, 255, 255).name();
+
+const QString
+NsPreferences::_ScopeView::defaultBoxTextColor = 
+    QColor(0, 0, 0).name();
+
+const QString
+NsPreferences::_ScopeView::defaultClipBoxLineColor = 
+    QColor(255, 255, 255).name();
+
+const QString
+NsPreferences::_ScopeView::defaultClipBoxTextColor = 
+    QColor(0, 0, 0).name();
+
+const QString
+NsPreferences::_ScopeView::defaultFrustumLineColor = 
+    QColor(255, 255, 255).name();
+
+const QString
+NsPreferences::_ScopeView::defaultFrustumTextColor = 
+    QColor(0, 0, 0).name();
+
+const QString
+NsPreferences::_ScopeView::defaultImportTransformLineColor = 
+    QColor(255, 255, 255).name();
+
+const QString
+NsPreferences::_ScopeView::defaultImportTransformTextColor = 
+    QColor(0, 0, 0).name();
+
+const QString
+NsPreferences::_ScopeView::defaultPlaneLineColor = 
+    QColor(255, 255, 255).name();
+
+const QString
+NsPreferences::_ScopeView::defaultPlaneTextColor = 
+    QColor(0, 0, 0).name();
+
+const QString
+NsPreferences::_ScopeView::defaultSphereLineColor = 
+    QColor(255, 255, 255).name();
+
+const QString
+NsPreferences::_ScopeView::defaultSphereTextColor = 
+    QColor(0, 0, 0).name();
+
+
+const QString
+NsPreferences::_ScopeView::defaultHudTextColor = 
+    QColor(223, 223, 185).name();
+
+const QString
+NsPreferences::_ScopeView::defaultBodyLabelTextColor = 
+    QColor(255, 105, 180).name();
+
+// -----------------------------------------------------------------------------

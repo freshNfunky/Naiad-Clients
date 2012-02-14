@@ -49,6 +49,7 @@ class QFile;
 class QXmlStreamReader;
 class QXmlStreamWriter;
 class QXmlStreamAttributes;
+class QSettings;
 
 // -----------------------------------------------------------------------------
 
@@ -74,19 +75,26 @@ private:
 public:
 
     bool
-    read(QIODevice *device);
+    readXml(QIODevice *device);
 
     void 
-    write(QIODevice *device) const;
+    writeXml(QIODevice *device) const;
 
+    //! Reset to default values.
     void
-    reset();
+    reset()
+    {
+        _gen.reset();
+        _gv.reset();
+        _sv.reset();
+        emit changed();
+    }
 
 public:     // General.
 
     QString
     generalStylePath() const
-    { return qgetenv("NAIAD_PATH") + _generalStylePath; }
+    { return qgetenv("NAIAD_PATH") + _gen.stylePath; }
 
 public:     // Graph View.
 
@@ -94,506 +102,765 @@ public:     // Graph View.
 
     const QColor&
     graphViewBackground() const
-    { return _graphViewBackground; }
+    { return _gv.background; }
 
     const QColor&
     graphViewLiveBackground() const
-    { return _graphViewLiveBackground; }
+    { return _gv.liveBackground; }
 
     const QColor&
     graphViewSelectionColor() const
-    { return _graphViewSelectionColor; }
+    { return _gv.selectionColor; }
     
 
     // Feeds.
 
     const QColor&
     graphViewFeedLineColor() const
-    { return _graphViewFeedLineColor; }
+    { return _gv.feedLineColor; }
 
     const QColor&
     graphViewFeedReplacedLineColor() const
-    { return _graphViewFeedReplacedLineColor; }
+    { return _gv.feedReplacedLineColor; }
 
     const QColor&
     graphViewFeedValidLineColor() const
-    { return _graphViewFeedValidLineColor; }
+    { return _gv.feedValidLineColor; }
 
     const QColor&
     graphViewFeedInvalidLineColor() const
-    { return _graphViewFeedInvalidLineColor; }
+    { return _gv.feedInvalidLineColor; }
 
 
     // Plugs.
 
     const QColor&
     graphViewPlugLineColor() const
-    { return _graphViewPlugLineColor; }
+    { return _gv.plugLineColor; }
 
     const QColor&
     graphViewPlugBackground() const
-    { return _graphViewPlugBackground; }
+    { return _gv.plugBackground; }
 
     const QColor&
     graphViewPlugTextColor() const
-    { return _graphViewPlugTextColor; }
+    { return _gv.plugTextColor; }
 
 
     // Bodies.
 
     const QColor&
     graphViewBodyLineColor() const
-    { return _graphViewBodyLineColor; }
+    { return _gv.bodyLineColor; }
 
     const QColor&
     graphViewBodyBackground() const
-    { return _graphViewBodyBackground; }
+    { return _gv.bodyBackground; }
 
     const QColor&
     graphViewBodyTextColor() const
-    { return _graphViewBodyTextColor; }
+    { return _gv.bodyTextColor; }
 
 
     // Ops.
 
     const QColor&
     graphViewOpLineColor() const
-    { return _graphViewOpLineColor; }
+    { return _gv.opLineColor; }
 
     const QColor&
     graphViewOpBackground() const
-    { return _graphViewOpBackground; }
+    { return _gv.opBackground; }
 
     const QColor&
     graphViewOpTextColor() const
-    { return _graphViewOpTextColor; }
+    { return _gv.opTextColor; }
 
     const QColor&
     graphViewOpDisabledColor() const
-    { return _graphViewOpDisabledColor; }
+    { return _gv.opDisabledColor; }
 
     // Op state.
 
     QColor
     graphViewOpStateColor(const QString &state) const
-    {
-        return _graphViewOpStateColors.value(
-            state, _graphViewOpStateDefaultColor);
-    }
+    { return _gv.opStateColors.value(state, _gv.opStateDefaultColor); }
 
-    QColor
+    const QColor&
     graphViewOpStateDefaultColor() const
-    { return _graphViewOpStateDefaultColor; }
+    { return _gv.opStateDefaultColor; }
 
     QStringList
     graphViewOpStateNames() const
-    { return _graphViewOpStateColors.keys(); }
+    { return _gv.opStateColors.keys(); }
 
     // Op category.
 
     QColor
-    graphViewOpCategoryColor(const QString &categoryName) const
-    {
-        return _graphViewOpCategoryColors.value(
-            categoryName, _graphViewOpCategoryDefaultColor);
-    }
+    graphViewOpCategoryColor(const QString &catName) const
+    { return _gv.opCategoryColors.value(catName, _gv.opCategoryDefaultColor); }
 
-    QColor
+    const QColor&
     graphViewOpCategoryDefaultColor() const
-    { return _graphViewOpCategoryDefaultColor; }
+    { return _gv.opCategoryDefaultColor; }
 
     QStringList
     graphViewOpCategoryNames() const
-    { return _graphViewOpCategoryColors.keys(); }
+    { return _gv.opCategoryColors.keys(); }
 
 
     // Misc.
 
     QColor
-    graphViewSignatureColor(const QString &signatureName) const
-    {
-        return _graphViewSignatureColors.value(
-            signatureName, _graphViewSignatureDefaultColor);
-    }
+    graphViewSignatureColor(const QString &sigName) const
+    { return _gv.signatureColors.value(sigName, _gv.signatureDefaultColor); }
 
-    QColor
+    const QColor&
     graphViewSignatureDefaultColor() const
-    { return _graphViewSignatureDefaultColor; }
+    { return _gv.signatureDefaultColor; }
 
     QStringList
     graphViewSignatureNames() const
-    { return _graphViewSignatureColors.keys(); }
+    { return _gv.signatureColors.keys(); }
 
 public:     // Scope View.
 
     const QColor&
     scopeViewBackground() const
-    { return _scopeViewBackground; }
+    { return _sv.background; }
 
     const QColor& 
     scopeViewSelectionColor() const
-    { return _scopeViewSelectionColor; }
+    { return _sv.selectionColor; }
 
     const QColor&
     scopeViewConstructionGridColor() const
-    { return _scopeViewConstructionGridColor; }
+    { return _sv.constructionGridColor; }
 
     const QColor& 
     scopeViewAxisLineColor() const
-    { return _scopeViewAxisLineColor; }
+    { return _sv.axisLineColor; }
 
     const QColor& 
     scopeViewAxisTextColor() const
-    { return _scopeViewAxisTextColor; }
+    { return _sv.axisTextColor; }
 
     const QColor& 
     scopeViewBoxLineColor() const
-    { return _scopeViewBoxLineColor; }
+    { return _sv.boxLineColor; }
 
     const QColor& 
     scopeViewBoxTextColor() const
-    { return _scopeViewBoxTextColor; }
+    { return _sv.boxTextColor; }
 
     const QColor& 
     scopeViewClipBoxLineColor() const
-    { return _scopeViewClipBoxLineColor; }
+    { return _sv.clipBoxLineColor; }
 
     const QColor& 
     scopeViewClipBoxTextColor() const
-    { return _scopeViewClipBoxTextColor; }
+    { return _sv.clipBoxTextColor; }
 
     const QColor& 
     scopeViewFrustumLineColor() const
-    { return _scopeViewFrustumLineColor; }
+    { return _sv.frustumLineColor; }
 
     const QColor& 
     scopeViewFrustumTextColor() const
-    { return _scopeViewFrustumTextColor; }
+    { return _sv.frustumTextColor; }
 
     const QColor&
     scopeViewImportTransformLineColor() const
-    { return _scopeViewImportTransformLineColor; }
+    { return _sv.importTransformLineColor; }
 
     const QColor&
     scopeViewImportTransformTextColor() const
-    { return _scopeViewImportTransformTextColor; }
+    { return _sv.importTransformTextColor; }
 
     const QColor& 
     scopeViewPlaneLineColor() const
-    { return _scopeViewPlaneLineColor; }
+    { return _sv.planeLineColor; }
 
     const QColor& 
     scopeViewPlaneTextColor() const
-    { return _scopeViewPlaneTextColor; }
+    { return _sv.planeTextColor; }
 
     const QColor& 
     scopeViewSphereLineColor() const
-    { return _scopeViewSphereLineColor; }
+    { return _sv.sphereLineColor; }
 
     const QColor& 
     scopeViewSphereTextColor() const
-    { return _scopeViewSphereTextColor; }
+    { return _sv.sphereTextColor; }
 
     const QColor& 
     scopeViewHudTextColor() const
-    { return _scopeViewHudTextColor; }
+    { return _sv.hudTextColor; }
 
     const QColor& 
     scopeViewBodyLabelTextColor() const
-    { return _scopeViewBodyLabelTextColor; }
+    { return _sv.bodyLabelTextColor; }
 
 public slots:   // General.
 
     void
     setGeneralStylePath(const QString &path)
-    { _generalStylePath = path; emit changed(); }
+    { _gen.stylePath = path; emit changed(); }
 
 public slots:   // Graph View.
 
     void
     setGraphViewBackground(const QColor &color)
-    { _graphViewBackground = color; emit changed(); }
+    { _gv.background = color; emit changed(); }
 
     void
     setGraphViewLiveBackground(const QColor &color)
-    { _graphViewLiveBackground = color; emit changed(); }
+    { _gv.liveBackground = color; emit changed(); }
 
     void
     setGraphViewSelectionColor(const QColor &color)
-    { _graphViewSelectionColor = color; emit changed(); }
+    { _gv.selectionColor = color; emit changed(); }
 
     void
     setGraphViewFeedLineColor(const QColor &color)
-    { _graphViewFeedLineColor = color; emit changed(); }
+    { _gv.feedLineColor = color; emit changed(); }
 
     void
     setGraphViewFeedReplacedLineColor(const QColor &color)
-    { _graphViewFeedReplacedLineColor = color; emit changed(); }
+    { _gv.feedReplacedLineColor = color; emit changed(); }
 
     void
     setGraphViewFeedValidLineColor(const QColor &color)
-    { _graphViewFeedValidLineColor = color; emit changed(); }
+    { _gv.feedValidLineColor = color; emit changed(); }
 
     void
     setGraphViewFeedInvalidLineColor(const QColor &color)
-    { _graphViewFeedInvalidLineColor = color; emit changed(); }
+    { _gv.feedInvalidLineColor = color; emit changed(); }
 
     void
     setGraphViewPlugLineColor(const QColor &color)
-    { _graphViewPlugLineColor = color; emit changed(); }
+    { _gv.plugLineColor = color; emit changed(); }
 
     void
     setGraphViewPlugBackground(const QColor &color)
-    { _graphViewPlugBackground = color; emit changed(); }
+    { _gv.plugBackground = color; emit changed(); }
 
     void
     setGraphViewPlugTextColor(const QColor &color)
-    { _graphViewPlugTextColor = color; emit changed(); }
+    { _gv.plugTextColor = color; emit changed(); }
 
     void
     setGraphViewBodyLineColor(const QColor &color)
-    { _graphViewBodyLineColor = color; emit changed(); }
+    { _gv.bodyLineColor = color; emit changed(); }
 
     void
     setGraphViewBodyBackground(const QColor &color)
-    { _graphViewBodyBackground = color; emit changed(); }
+    { _gv.bodyBackground = color; emit changed(); }
 
     void
     setGraphViewBodyTextColor(const QColor &color)
-    { _graphViewBodyTextColor = color; emit changed(); }
+    { _gv.bodyTextColor = color; emit changed(); }
 
     void
     setGraphViewOpLineColor(const QColor &color)
-    { _graphViewOpLineColor = color; emit changed(); }
+    { _gv.opLineColor = color; emit changed(); }
 
     void
     setGraphViewOpTextColor(const QColor &color)
-    { _graphViewOpTextColor = color; emit changed(); }
+    { _gv.opTextColor = color; emit changed(); }
 
     void
     setGraphViewOpBackground(const QColor &color)
-    { _graphViewOpBackground = color; emit changed(); }
+    { _gv.opBackground = color; emit changed(); }
 
     void
     setGraphViewOpDisabledColor(const QColor &color)
-    { _graphViewOpDisabledColor = color; emit changed(); }
+    { _gv.opDisabledColor = color; emit changed(); }
 
     // Op category.
 
     void
     setGraphViewOpCategoryColor(const QString &categoryName, 
                                 const QColor  &color)
-    { _graphViewOpCategoryColors[categoryName] = color; emit changed(); }
+    { _gv.opCategoryColors[categoryName] = color; emit changed(); }
 
     void
     setGraphViewOpCategoryDefaultColor(const QColor &color)
-    { _graphViewOpCategoryDefaultColor = color; emit changed(); }
+    { _gv.opCategoryDefaultColor = color; emit changed(); }
 
     // Op state.
 
     void
     setGraphViewOpStateColor(const QString &stateName, 
                              const QColor  &color)
-    { _graphViewOpStateColors[stateName] = color; emit changed(); }
+    { _gv.opStateColors[stateName] = color; emit changed(); }
 
     void
     setGraphViewOpStateDefaultColor(const QColor &color)
-    { _graphViewOpStateDefaultColor = color; emit changed(); }
+    { _gv.opStateDefaultColor = color; emit changed(); }
 
     // Signature.
 
     void
     setGraphViewSignatureColor(const QString &signatureName, 
                                const QColor  &color)
-    { _graphViewSignatureColors[signatureName] = color; emit changed(); }
+    { _gv.signatureColors[signatureName] = color; emit changed(); }
 
     void
     setGraphViewSignatureDefaultColor(const QColor &color)
-    { _graphViewSignatureDefaultColor = color; emit changed(); }
+    { _gv.signatureDefaultColor = color; emit changed(); }
 
 public slots:   // Scope View.
 
     void
     setScopeViewBackground(const QColor &color)
-    { _scopeViewBackground = color; emit changed(); }
+    { _sv.background = color; emit changed(); }
 
     void
     setScopeViewSelectionColor(const QColor &color)
-    { _scopeViewSelectionColor = color; emit changed(); }
+    { _sv.selectionColor = color; emit changed(); }
 
     void
     setScopeViewConstructionGridColor(const QColor &color)
-    { _scopeViewConstructionGridColor = color; emit changed(); }
+    { _sv.constructionGridColor = color; emit changed(); }
 
     void
     setScopeViewAxisLineColor(const QColor &color)
-    { _scopeViewAxisLineColor = color; emit changed(); }
+    { _sv.axisLineColor = color; emit changed(); }
 
     void
     setScopeViewAxisTextColor(const QColor &color)
-    { _scopeViewAxisTextColor = color; emit changed(); }
+    { _sv.axisTextColor = color; emit changed(); }
 
     void
     setScopeViewBoxLineColor(const QColor &color)
-    { _scopeViewBoxLineColor = color; emit changed(); }
+    { _sv.boxLineColor = color; emit changed(); }
 
     void
     setScopeViewBoxTextColor(const QColor &color)
-    { _scopeViewBoxTextColor = color; emit changed(); }
+    { _sv.boxTextColor = color; emit changed(); }
 
     void
     setScopeViewClipBoxLineColor(const QColor &color)
-    { _scopeViewClipBoxLineColor = color; emit changed(); }
+    { _sv.clipBoxLineColor = color; emit changed(); }
 
     void
     setScopeViewClipBoxTextColor(const QColor &color)
-    { _scopeViewClipBoxTextColor = color; emit changed(); }
+    { _sv.clipBoxTextColor = color; emit changed(); }
 
     void
     setScopeViewFrustumLineColor(const QColor &color)
-    { _scopeViewFrustumLineColor = color; emit changed(); }
+    { _sv.frustumLineColor = color; emit changed(); }
 
     void
     setScopeViewFrustumTextColor(const QColor &color)
-    { _scopeViewFrustumTextColor = color; emit changed(); }
+    { _sv.frustumTextColor = color; emit changed(); }
 
     void
     setScopeViewImportTransformLineColor(const QColor &color)
-    { _scopeViewImportTransformLineColor = color; emit changed(); }
+    { _sv.importTransformLineColor = color; emit changed(); }
 
     void
     setScopeViewImportTransformTextColor(const QColor &color)
-    { _scopeViewImportTransformTextColor = color; emit changed(); }
+    { _sv.importTransformTextColor = color; emit changed(); }
 
     void
     setScopeViewPlaneLineColor(const QColor &color)
-    { _scopeViewPlaneLineColor = color; emit changed(); }
+    { _sv.planeLineColor = color; emit changed(); }
 
     void
     setScopeViewPlaneTextColor(const QColor &color)
-    { _scopeViewPlaneTextColor = color; emit changed(); }
+    { _sv.planeTextColor = color; emit changed(); }
 
     void
     setScopeViewSphereLineColor(const QColor &color)
-    { _scopeViewSphereLineColor = color; emit changed(); }
+    { _sv.sphereLineColor = color; emit changed(); }
 
     void
     setScopeViewSphereTextColor(const QColor &color)
-    { _scopeViewSphereTextColor = color; emit changed(); }
+    { _sv.sphereTextColor = color; emit changed(); }
 
     void
     setScopeViewHudTextColor(const QColor &color)
-    { _scopeViewHudTextColor = color; emit changed(); }
+    { _sv.hudTextColor = color; emit changed(); }
 
     void
     setScopeViewBodyLabelTextColor(const QColor &color)
-    { _scopeViewBodyLabelTextColor = color; emit changed(); }
+    { _sv.bodyLabelTextColor = color; emit changed(); }
 
 signals:
 
     void
     changed();
 
-private:
+protected slots:
+
+    void
+    onAboutToQuit()
+    { _writeSettings(); }
+
+private:    // Settings.
+
+    typedef QMap<QString, QColor> _ColorMap;
+
+    static const QString _settingsGroup;
+
+    void
+    _readSettings();
+
+    static void
+    _readColorSetting(const QSettings &s,  
+                      const QString   &k, 
+                      QColor          &c,
+                      const QString   &d);
+
+    static void 
+    _readMappedColorSetting(const QSettings &s,  
+                            _ColorMap       &m,
+                            const _ColorMap &d);
+
+    void
+    _writeSettings() const;
+
+    static void
+    _writeColorSetting(QSettings &s, const QString &k, const QColor &c);
+
+    static void
+    _writeMappedColorSetting(QSettings &s, const _ColorMap &map);
+
+private:    // XML
 
     bool
-    _readGeneral(QXmlStreamReader &xml);
+    _readXmlGeneral(QXmlStreamReader &xml);
 
     bool
-    _readGraphView(QXmlStreamReader &xml);
+    _readXmlGraphView(QXmlStreamReader &xml);
 
     bool
-    _readScopeView(QXmlStreamReader &xml);
+    _readXmlScopeView(QXmlStreamReader &xml);
 
     static QColor
-    _parseColorAttributes(const QXmlStreamAttributes &attr);
+    _parseXmlColorAttributes(const QXmlStreamAttributes &attr);
 
     static QString 
-    _parseStringAttribute(const QXmlStreamAttributes &attr,
-                          const QString              &qualifiedName);
+    _parseXmlStringAttribute(const QXmlStreamAttributes &attr,
+                             const QString              &qualifiedName);
 
     static void
-    _writeColorElement(QXmlStreamWriter &xml, 
-                       const QString    &qualifiedName, 
-                       const QColor     &color);
+    _writeXmlColorElement(QXmlStreamWriter &xml, 
+                          const QString    &qualifiedName, 
+                          const QColor     &color);
 
     static void
-    _writeMappedColorElement(QXmlStreamWriter           &xml, 
-                             const QString              &qualifiedName, 
-                             const QMap<QString,QColor> &colors);
+    _writeXmlMappedColorElement(QXmlStreamWriter &xml, 
+                                const QString    &qualifiedName, 
+                                const _ColorMap  &colors);
 
     static void
-    _writePathElement(QXmlStreamWriter &xml, 
-                      const QString    &qualifiedName, 
-                      const QString    &color);
+    _writeXmlPathElement(QXmlStreamWriter &xml, 
+                         const QString    &qualifiedName, 
+                         const QString    &path);
+
+private:
+
+    //! DOCS
+    struct _General
+    {
+    public:
+
+        static const QString settingsGroup;
+
+    public:     // Default values.
+
+        static const QString defaultStylePath;
+
+    public:
+
+        //! CTOR.
+        _General()
+            : stylePath(defaultStylePath)
+        {}
+
+    public:     // Values.
+        
+        QString stylePath;
+
+    public:
+
+        void
+        reset()
+        {
+            stylePath = defaultStylePath;
+        }
+    };
+
+private:
+
+    //! DOCS
+    struct _GraphView
+    {
+    public:
+
+        static const QString settingsGroup;
+
+    public:     // Default values.
+
+        static const QString defaultBackground;
+        static const QString defaultLiveBackground;
+        static const QString defaultSelectionColor;
+
+        static const QString defaultFeedLineColor;
+        static const QString defaultFeedReplacedLineColor;
+        static const QString defaultFeedValidLineColor;
+        static const QString defaultFeedInvalidLineColor;
+
+        static const QString defaultPlugLineColor; 
+        static const QString defaultPlugTextColor; 
+        static const QString defaultPlugBackground; 
+
+        static const QString defaultBodyLineColor; 
+        static const QString defaultBodyTextColor; 
+        static const QString defaultBodyBackground; 
+
+        static const QString defaultOpLineColor;
+        static const QString defaultOpTextColor;
+        static const QString defaultOpBackground;
+        static const QString defaultOpDisabledColor;
+
+        static const QString  defaultOpStateDefaultColor;
+        static const QString  defaultOpCategoryDefaultColor;
+        static const QString  defaultSignatureDefaultColor;
+        
+        static _ColorMap 
+        defaultOpStateColors();
+
+        static _ColorMap 
+        defaultOpCategoryColors();
+
+        static _ColorMap 
+        defaultSignatureColors();
+
+    public: 
+
+        //! CTOR.
+        _GraphView()
+            : background(defaultBackground)
+            , liveBackground(defaultLiveBackground)
+            , selectionColor(defaultSelectionColor)
+            , feedLineColor(defaultFeedLineColor)
+            , feedReplacedLineColor(defaultFeedReplacedLineColor)
+            , feedValidLineColor(defaultFeedValidLineColor)
+            , feedInvalidLineColor(defaultFeedInvalidLineColor)
+            , plugLineColor(defaultPlugLineColor)
+            , plugTextColor(defaultPlugTextColor)
+            , plugBackground(defaultPlugBackground)
+            , bodyLineColor(defaultBodyLineColor)
+            , bodyTextColor(defaultBodyTextColor)
+            , bodyBackground(defaultBodyBackground)
+            , opLineColor(defaultOpLineColor)
+            , opTextColor(defaultOpTextColor)
+            , opBackground(defaultOpBackground)
+            , opDisabledColor(defaultOpDisabledColor)
+            , opStateDefaultColor(defaultOpStateDefaultColor)
+            , opCategoryDefaultColor(defaultOpCategoryDefaultColor)
+            , signatureDefaultColor(defaultSignatureDefaultColor)
+            , opStateColors(defaultOpStateColors())
+            , opCategoryColors(defaultOpCategoryColors())
+            , signatureColors(defaultSignatureColors())
+        {}
+
+    public:     // Values.
+
+        QColor background;
+        QColor liveBackground;
+        QColor selectionColor;
+
+        QColor feedLineColor;
+        QColor feedReplacedLineColor;
+        QColor feedValidLineColor;
+        QColor feedInvalidLineColor;
+
+        QColor plugLineColor; 
+        QColor plugTextColor; 
+        QColor plugBackground; 
+
+        QColor bodyLineColor; 
+        QColor bodyTextColor; 
+        QColor bodyBackground; 
+
+        QColor opLineColor;
+        QColor opTextColor;
+        QColor opBackground;
+        QColor opDisabledColor;
+
+        QColor opStateDefaultColor;
+        QColor opCategoryDefaultColor;
+        QColor signatureDefaultColor;
+
+        _ColorMap opStateColors;
+        _ColorMap opCategoryColors;
+        _ColorMap signatureColors;
+
+    public:
+
+        void
+        reset()
+        {
+            background             = defaultBackground;
+            liveBackground         = defaultLiveBackground;
+            selectionColor         = defaultSelectionColor;
+            feedLineColor          = defaultFeedLineColor;
+            feedReplacedLineColor  = defaultFeedReplacedLineColor;
+            feedValidLineColor     = defaultFeedValidLineColor;
+            feedInvalidLineColor   = defaultFeedInvalidLineColor;
+            plugLineColor          = defaultPlugLineColor;
+            plugTextColor          = defaultPlugTextColor;
+            plugBackground         = defaultPlugBackground;
+            bodyLineColor          = defaultBodyLineColor;
+            bodyTextColor          = defaultBodyTextColor;
+            bodyBackground         = defaultBodyBackground;
+            opLineColor            = defaultOpLineColor;
+            opTextColor            = defaultOpTextColor;
+            opBackground           = defaultOpBackground;
+            opDisabledColor        = defaultOpDisabledColor;
+            opStateDefaultColor    = defaultOpStateDefaultColor;
+            opCategoryDefaultColor = defaultOpCategoryDefaultColor;
+            signatureDefaultColor  = defaultSignatureDefaultColor;
+            opStateColors          = defaultOpStateColors();
+            opCategoryColors       = defaultOpCategoryColors();
+            signatureColors        = defaultSignatureColors();
+        }
+    };
+
+private:
+
+    //! DOCS
+    struct _ScopeView
+    {
+    public:
+
+        static const QString settingsGroup;
+
+    public:     // Default values.
+
+        static const QString defaultBackground;
+        static const QString defaultSelectionColor;
+        static const QString defaultConstructionGridColor;
+
+        static const QString defaultAxisLineColor;
+        static const QString defaultAxisTextColor;
+        static const QString defaultBoxLineColor;
+        static const QString defaultBoxTextColor;
+        static const QString defaultClipBoxLineColor;
+        static const QString defaultClipBoxTextColor;
+        static const QString defaultFrustumLineColor;
+        static const QString defaultFrustumTextColor;
+        static const QString defaultImportTransformLineColor;
+        static const QString defaultImportTransformTextColor;
+        static const QString defaultPlaneLineColor;
+        static const QString defaultPlaneTextColor;
+        static const QString defaultSphereLineColor;
+        static const QString defaultSphereTextColor;
+
+        static const QString defaultHudTextColor;
+        static const QString defaultBodyLabelTextColor;
+
+    public:
+
+        //! CTOR.
+        _ScopeView()
+            : background(defaultBackground)
+            , selectionColor(defaultSelectionColor)
+            , constructionGridColor(defaultConstructionGridColor)
+            , axisLineColor(defaultAxisLineColor)
+            , axisTextColor(defaultAxisTextColor)
+            , boxLineColor(defaultBoxLineColor)
+            , boxTextColor(defaultBoxTextColor)
+            , clipBoxLineColor(defaultClipBoxLineColor)
+            , clipBoxTextColor(defaultClipBoxTextColor)
+            , frustumLineColor(defaultFrustumLineColor)
+            , frustumTextColor(defaultFrustumTextColor)
+            , importTransformLineColor(defaultImportTransformLineColor)
+            , importTransformTextColor(defaultImportTransformTextColor)
+            , planeLineColor(defaultPlaneLineColor)
+            , planeTextColor(defaultPlaneTextColor)
+            , sphereLineColor(defaultSphereLineColor)
+            , sphereTextColor(defaultSphereTextColor)
+            , hudTextColor(defaultHudTextColor)
+            , bodyLabelTextColor(defaultBodyLabelTextColor)
+        {}
+
+    public:     // Values.
+
+        QColor background;
+        QColor selectionColor;
+        QColor constructionGridColor;
+
+        QColor axisLineColor;
+        QColor axisTextColor;
+        QColor boxLineColor;
+        QColor boxTextColor;
+        QColor clipBoxLineColor;
+        QColor clipBoxTextColor;
+        QColor frustumLineColor;
+        QColor frustumTextColor;
+        QColor importTransformLineColor;
+        QColor importTransformTextColor;
+        QColor planeLineColor;
+        QColor planeTextColor;
+        QColor sphereLineColor;
+        QColor sphereTextColor;
+    
+        QColor hudTextColor;
+        QColor bodyLabelTextColor;
+
+    public:
+
+        void
+        reset()
+        {
+            background               = defaultBackground;
+            selectionColor           = defaultSelectionColor;
+            constructionGridColor    = defaultConstructionGridColor;
+            axisLineColor            = defaultAxisLineColor;
+            axisTextColor            = defaultAxisTextColor;
+            boxLineColor             = defaultBoxLineColor;
+            boxTextColor             = defaultBoxTextColor;
+            clipBoxLineColor         = defaultClipBoxLineColor;
+            clipBoxTextColor         = defaultClipBoxTextColor;
+            frustumLineColor         = defaultFrustumLineColor;
+            frustumTextColor         = defaultFrustumTextColor;
+            importTransformLineColor = defaultImportTransformLineColor;
+            importTransformTextColor = defaultImportTransformTextColor;
+            planeLineColor           = defaultPlaneLineColor;
+            planeTextColor           = defaultPlaneTextColor;
+            sphereLineColor          = defaultSphereLineColor;
+            sphereTextColor          = defaultSphereTextColor;
+            hudTextColor             = defaultHudTextColor;
+            bodyLabelTextColor       = defaultBodyLabelTextColor;
+        }
+    };
 
 private:    // Member variables.
 
-    QString _generalStylePath;
-
-    typedef QMap<QString, QColor> _OpCategoryColorMapType;
-    typedef QMap<QString, QColor> _OpStateColorMapType;
-    typedef QMap<QString, QColor> _SignatureColorMapType;
-
-    QColor _graphViewBackground;
-    QColor _graphViewLiveBackground;
-    QColor _graphViewSelectionColor;
-
-    QColor _graphViewFeedLineColor;
-    QColor _graphViewFeedReplacedLineColor;
-    QColor _graphViewFeedValidLineColor;
-    QColor _graphViewFeedInvalidLineColor;
-
-
-    QColor _graphViewPlugLineColor; 
-    QColor _graphViewPlugTextColor; 
-    QColor _graphViewPlugBackground; 
-
-    QColor _graphViewBodyLineColor; 
-    QColor _graphViewBodyTextColor; 
-    QColor _graphViewBodyBackground; 
-
-    QColor                  _graphViewOpLineColor;
-    QColor                  _graphViewOpTextColor;
-    QColor                  _graphViewOpBackground;
-    QColor                  _graphViewOpDisabledColor;
-    _OpStateColorMapType    _graphViewOpStateColors;
-    QColor                  _graphViewOpStateDefaultColor;
-    _OpCategoryColorMapType _graphViewOpCategoryColors;
-    QColor                  _graphViewOpCategoryDefaultColor;
-    
-    _SignatureColorMapType  _graphViewSignatureColors;
-    QColor                  _graphViewSignatureDefaultColor;
-
-    QColor _scopeViewBackground;
-    QColor _scopeViewSelectionColor;
-    QColor _scopeViewConstructionGridColor;
-
-    QColor _scopeViewAxisLineColor;
-    QColor _scopeViewAxisTextColor;
-    QColor _scopeViewBoxLineColor;
-    QColor _scopeViewBoxTextColor;
-    QColor _scopeViewClipBoxLineColor;
-    QColor _scopeViewClipBoxTextColor;
-    QColor _scopeViewFrustumLineColor;
-    QColor _scopeViewFrustumTextColor;
-    QColor _scopeViewImportTransformLineColor;
-    QColor _scopeViewImportTransformTextColor;
-    QColor _scopeViewPlaneLineColor;
-    QColor _scopeViewPlaneTextColor;
-    QColor _scopeViewSphereLineColor;
-    QColor _scopeViewSphereTextColor;
-    
-    QColor _scopeViewHudTextColor;
-    QColor _scopeViewBodyLabelTextColor;
+    _General   _gen;
+    _GraphView _gv;
+    _ScopeView _sv;
 
 private:
 
+    //! CTOR.
     explicit
-    NsPreferences (QObject *parent = 0);
+    NsPreferences (QObject *parent = 0)
+        : QObject(parent)
+        , _gen()    // Default General prefs.
+        , _gv()     // Default Graph View prefs.
+        , _sv()     // Default Scope View prefs.
+    { _readSettings(); }
 
     //! DTOR.
-    ~NsPreferences () 
+    virtual
+    ~NsPreferences() 
     {}
 };
 

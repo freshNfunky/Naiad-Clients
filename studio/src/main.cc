@@ -66,35 +66,12 @@ int
 main(int argc, char *argv[])
 {
     try {
-        // Read preferences from disk.
-
-        const QString prefCachePath = 
-            qgetenv("NAIAD_PATH") + "/clients/config/nstudio-pref-cache.xml";
-        {
-        //std::cerr << prefCachePath.toStdString() << "\n";
-        QFile file(prefCachePath);
-        if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            if (file.size() == 0 || !NsPreferences::instance()->read(&file) ) {
-                // Failure parsing file. Set default preferences.
-
-                NsPreferences::instance()->reset();
-            }
-            file.close();
-        }
-        else {
-            NsPreferences::instance()->reset();
-        }
-
-        //std::cerr << NsPreferences::instance()->generalStylePath().toStdString() << "\n";
-        }
-
         // Create application.
 
         // NB: Must be called before application is constructed.
         //QApplication::setGraphicsSystem("opengl");
 
         NsApplication app(argc, argv);
-
         if (app.help()) {
             return 0;   // Early exit.
         }
@@ -119,7 +96,7 @@ main(int argc, char *argv[])
         // Show main window.
 
 #ifndef NS_NO_SPLASH
-        splash->showMessage("Opening main window...");
+        splash->showMessage(QObject::tr("Opening main window..."));
 #endif  // NS_NO_SPLASH
 
         mainWindow.show();
@@ -133,7 +110,8 @@ main(int argc, char *argv[])
 
         if (!app.fileName().isEmpty()) {
 #ifndef NS_NO_SPLASH
-            splash->showMessage("Opening graph from " + app.fileName() + "...");
+            splash->showMessage(
+                QObject::tr("Opening graph from ") + app.fileName() + "...");
 #endif  // NS_NO_SPLASH
 
             mainWindow.openGraph(app.fileName());
@@ -171,24 +149,6 @@ main(int argc, char *argv[])
         }
 
         const int exitCode = app.exec(); // Start GUI event loop.
-
-        
-        // Save preferences to file on disk. The current preferences will 
-        // over-write any existing ones.
-        {
-        QFile file(prefCachePath);
-        if (file.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            NsPreferences::instance()->write(&file);
-            file.close();
-        }
-        //else {
-        //    QMessageBox::warning(
-        //        0, 
-        //        "Warning", 
-        //        "Failed to open preference file: " + app.preferencesPath(),
-        //        QMessageBox::Ok);
-        //}
-        }
 
         return exitCode;
     }

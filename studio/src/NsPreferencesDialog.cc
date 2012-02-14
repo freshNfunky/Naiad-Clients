@@ -67,17 +67,18 @@ NsPreferencesDialog::NsPreferencesDialog(NsPreferences &preferences,
     : QMainWindow(parent, Qt::Dialog)
     , _preferences(&preferences)
 {
-    _setWindowTitle();
+    setWindowTitle("Naiad Studio Preferences");
     _createActions();
     _createMenus();
-    _createStatusBar();
-
     _rebuild();
-    //setBackgroundRole(QPalette::Dark);
     resize(640, 480);
 }
 
 // -----------------------------------------------------------------------------
+
+// _createActions
+// --------------
+//! DOCS
 
 void
 NsPreferencesDialog::_createActions()
@@ -116,13 +117,6 @@ NsPreferencesDialog::_createMenus()
     fileMenu->addAction(_exportAction);
     fileMenu->addSeparator();
     fileMenu->addAction(_closeAction);
-}
-
-
-void
-NsPreferencesDialog::_createStatusBar()
-{
-    statusBar()->showMessage(tr("Ready"));
 }
 
 
@@ -792,6 +786,10 @@ NsPreferencesDialog::_rebuild()
 
 // -----------------------------------------------------------------------------
 
+// _reset
+// ------
+//! DOCS
+
 void
 NsPreferencesDialog::_reset()
 { 
@@ -799,24 +797,37 @@ NsPreferencesDialog::_reset()
     _rebuild();
 }
 
+
+// _import
+// -------
+//! DOCS
+
 void
 NsPreferencesDialog::_import()
 {
     const QString fileName = 
-        _getImportFileName(
+        NsPath::getOpenFileName(
             this, 
-            tr("Import preferences"),
-            "../..");
+            tr("Import Preferences"), 
+            "../..", 
+            tr("XML Files (*.xml);;All Files (*.*)"));
 
     if (!fileName.isEmpty()) {
         QApplication::setOverrideCursor(Qt::WaitCursor);
         QFile importFile(fileName);
         if (importFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-            _preferences->read(&importFile);
+            if (_preferences->readXml(&importFile)) {
+                _rebuild();
+                NsMessageWidget::instance()->clientInfo(
+                    tr("Imported preferences from ") + 
+                    "'" + importFile.fileName() + "'");
+            }
+            else {
+                NsMessageWidget::instance()->clientError(
+                    tr("Failed to import preferences from ") + 
+                    "'" + importFile.fileName() + "'");
+            }
             importFile.close();
-            NsMessageWidget::instance()->clientInfo(
-                tr("Imported preferences from ") + 
-                "'" + importFile.fileName() + "'");
         }
         else {
             NsMessageWidget::instance()->clientError(
@@ -824,120 +835,44 @@ NsPreferencesDialog::_import()
                 "'" + importFile.fileName() + "'");
         }
         QApplication::restoreOverrideCursor();
-        _rebuild();
     }
 }
 
+// _export
+// -------
+//! DOCS
 
 void
 NsPreferencesDialog::_export()
 {
-    const QString fileName = 
-        _getExportFileName(
-            this, 
-            tr("Export preferences"), 
-            "../..");
+    QString fileName = 
+        NsPath::getSaveFileName(
+            this,
+            tr("Export Preferences"),
+            "../..",
+            tr("XML Files (*.xml);;All Files (*.*)"));
 
     if (!fileName.isEmpty()) {
+        if (QFileInfo(fileName).suffix().isEmpty()) {
+            fileName += ".xml"; // Add default suffix if necessary.
+        }
+
         QApplication::setOverrideCursor(Qt::WaitCursor);
-        statusBar()->showMessage(
-            tr("Exporting preferences to '") + fileName + "'...");
-
-        // Back up existing preference file.
-        // No need to open, just for copying.
-
-        QFile saveFile(fileName);
-        QFile backupFile(_getBackupFileName(fileName)); 
-
-        // Remove existing backup file.
-
-        if (saveFile.exists() && backupFile.exists()) {
-            if (!backupFile.remove()) {
-                NsMessageWidget::instance()->clientWarning(
-                    tr("Failed to remove existing backup file ") +
-                    "'" + backupFile.fileName() + "'");
-            }
-        }
-
-        // Copy existing file to backup file.
-
-        if (saveFile.exists() && !backupFile.exists()) {
-            if (!saveFile.copy(backupFile.fileName())) {
-                NsMessageWidget::instance()->clientWarning(
-                    tr("Failed to copy existing file to backup file ") +
-                    "'" + backupFile.fileName() + "'");
-            }
-        }
-
-        // Write preference file.
-
-        if (saveFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
-            _preferences->write(&saveFile);
-            saveFile.close();
+        QFile exportFile(fileName);
+        if (exportFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+            _preferences->writeXml(&exportFile);
+            NsMessageWidget::instance()->clientInfo(
+                tr("Exported preferences to ") + 
+                "'" + exportFile.fileName() + "'");
+            exportFile.close();
         }
         else {
             NsMessageWidget::instance()->clientError(
                 tr("Failed to open file ") + 
-                "'" + saveFile.fileName() + "'");
+                "'" + exportFile.fileName() + "'");
         }
-
-        NsMessageWidget::instance()->clientInfo(
-            tr("Successfully exported preferences to ") + 
-            "'" + saveFile.fileName() + "'");
-        statusBar()->showMessage(
-            tr("Successfully exported preferences to ") + 
-            "'" + saveFile.fileName() + "'", 
-            5000);
         QApplication::restoreOverrideCursor();
     }
 }
 
-
-void
-NsPreferencesDialog::_setWindowTitle()
-{ setWindowTitle("Naiad Studio Preferences"); }
-
 // -----------------------------------------------------------------------------
-
-// _getImportFileName
-// ------------------
-//! Opens a file dialog with the given caption and returns the chosen file.
-//! [static]
-
-QString
-NsPreferencesDialog::_getImportFileName(QWidget       *parent,
-                                        const QString &caption, 
-                                        const QString &path)
-{ return NsPath::getOpenFileName(parent, caption, path); }
-
-
-// _getExportFileName
-// ------------------
-//! Opens a file dialog with the given caption and returns the chosen file.
-//! [static]
-
-QString
-NsPreferencesDialog::_getExportFileName(QWidget       *parent,
-                                        const QString &caption, 
-                                        const QString &path)
-{
-    QString fileName = 
-        NsPath::getSaveFileName(
-            parent,
-            caption,
-            path,
-            tr("XML Files (*.xml);;All Files (*.*)"));
-    if (!fileName.isEmpty() && QFileInfo(fileName).suffix().isEmpty()) {
-        fileName += ".xml"; // Add default suffix if necessary.
-    }
-    return fileName;
-}
-
-
-// _getBackupFileName
-// ------------------
-//! Returns a suitable backup file name. [static]
-
-QString
-NsPreferencesDialog::_getBackupFileName(const QString &fileName)
-{ return fileName + "~"; }

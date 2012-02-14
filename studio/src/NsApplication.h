@@ -68,6 +68,7 @@ public:
     notify(QObject *receiver, QEvent *event);
 
 
+
     const QString&
     fileName() const
     { return _fileName; }
@@ -124,6 +125,11 @@ public:
     help() const
     { return _help; }
 
+protected slots:
+
+    void
+    onAboutToQuit();
+
 private:
 
     void 
@@ -134,6 +140,16 @@ private:
     
     void 
     _registerScopes();
+
+private:
+
+    static const QString _settingsGroup;
+
+    void
+    _readSettings();
+
+    void
+    _writeSettings();
 
 private:
 
