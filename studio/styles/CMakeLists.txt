@@ -35,5 +35,4 @@
 project               (NAIAD_STUDIO_CONFIG)
 
 install_files (/clients/config FILES
-			   nstudio-pref-cache.xml
 			   nstudio-pro.qss)	

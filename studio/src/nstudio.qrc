@@ -60,6 +60,5 @@
     </qresource>
     <qresource prefix="">
         <file>../styles/default-style.qss</file>
-        <file>../styles/default-pref.xml</file>
     </qresource>
 </RCC>
